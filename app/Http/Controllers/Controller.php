@@ -14,9 +14,18 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     public function index() {
-        $files = Storage::files("images");
-        Log::info("files: " . json_encode($files));
-        echo json_encode($files);
+        $files = Storage::disk('images')->files();
+        foreach($files as $file) {
+            echo $file. "<br>";
+            echo "<br>";
+            echo public_path($file). "<br>";
+            echo "<br>";
+            echo "<br>";
+            echo "<br>";
+        }
+
+        // Log::info("files: " . json_encode($files));
+        // echo json_encode($files);
         die;
     }
 }

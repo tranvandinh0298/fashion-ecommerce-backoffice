@@ -15,8 +15,10 @@ class ImageFactory extends Factory
      */
     public function definition()
     {
-        $files = Storage::disk("public/ui")->files();
-        Log::info("files: " . json_encode($files));
+        $files = Storage::disk('public')->files("ui/images");
+        foreach($files as $file) {
+            echo public_path($file). "<br>";
+        }
 
         return [];
         // return [
