@@ -20,7 +20,9 @@ class CreateSkusTable extends Migration
                 $table->foreignId('product_id')->constrained("products");
                 $table->integer('quantity')->default(0);
                 $table->double('price')->default(0);
-                $table->timestamps();
+                $table->timestamp('created_at')->useCurrent();
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+                $table->softDeletes();
             });
         }
     }

@@ -19,9 +19,10 @@ class CreateProductsTable extends Migration
                 $table->string('name', 100);
                 $table->string('slug', 100)->unique();
                 $table->string('code', 50)->unique();
-                $table->string('description', 500);
-                $table->tinyInteger('active');
-                $table->timestamps();
+                $table->text('description');
+                $table->tinyInteger('status');
+                $table->timestamp('created_at')->useCurrent();
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
                 $table->softDeletes();
             });
         }

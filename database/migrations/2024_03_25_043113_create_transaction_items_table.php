@@ -19,7 +19,8 @@ class CreateTransactionItemsTable extends Migration
                 $table->foreignId("sku_id")->constrained("skus");
                 $table->integer("quantity")->default(0);
                 $table->double("price")->default(0);
-                $table->timestamps();
+                $table->timestamp('created_at')->useCurrent();
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             });
         }
     }

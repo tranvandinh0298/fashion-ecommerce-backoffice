@@ -18,7 +18,8 @@ class CreateProductImagesTable extends Migration
                 $table->id();
                 $table->foreignId("product_id")->constrained("products");
                 $table->foreignId("image_id")->constrained("images");
-                $table->timestamps();
+                $table->timestamp('created_at')->useCurrent();
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
                 $table->softDelete();
             });
         }

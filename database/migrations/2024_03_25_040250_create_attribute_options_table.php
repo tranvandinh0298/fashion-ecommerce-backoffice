@@ -18,7 +18,8 @@ class CreateAttributeOptionsTable extends Migration
                 $table->id();
                 $table->foreignId('attribute_id')->constrained('attributes');
                 $table->string('value', 100);
-                $table->timestamps();
+                $table->timestamp('created_at')->useCurrent();
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
                 $table->softDeletes();
             });
         }

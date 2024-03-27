@@ -18,7 +18,7 @@ class CreateImagesTable extends Migration
                 $table->id();
                 $table->string('caption', 100)->nullable();
                 $table->string('address', 200);
-                $table->tinyInteger('active')->default(0);
+                $table->tinyInteger('status')->default(0);
                 $table->timestamp('created_at')->useCurrent();
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
                 $table->softDeletes();
