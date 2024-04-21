@@ -3,6 +3,9 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -14,6 +17,7 @@ class Handler extends ExceptionHandler
      */
     protected $dontReport = [
         //
+        RestException::class,
     ];
 
     /**
@@ -38,4 +42,39 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+        /**
+     * Render the exception into an HTTP response.
+     * Target exception orrcured while handling a request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function render($request, Throwable $e)
+    {
+
+        Log::debug('======================================');
+        Log::debug('Exception instance of ' . get_class($e));
+        Log::debug('Message: ' . $e->getMessage());
+        Log::debug('Code: ' . $e->getCode());
+        Log::debug('======================================');
+
+        // Validation exception
+        if ($e instanceof ValidationException) {
+            Log::debug('ValidationException: ' . $e->getMessage());
+            // Log::debug(json_encode($e, 256));
+            // Log::debug(json_encode($e->getMessage(), 256));
+            $messages = collect($e->validator->getMessageBag()->getMessages())->collapse();
+            Log::debug("messages: " . json_encode($messages, 256));
+            // Log::debug("messages2: " . json_encode($e->validator->getMessageBag()->getMessages(), 256));
+            // return $this->errorResponse($messages->first(), Response::HTTP_BAD_REQUEST);
+        }
+
+
+
+
+        // Handle other exceptions
+        return parent::render($request, $e);
+    }
+
 }

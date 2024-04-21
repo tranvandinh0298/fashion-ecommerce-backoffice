@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,8 +16,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get("/storage", [Controller::class, "index"]);
+Route::get("/", [DashboardController::class, "index"]);
+
+Route::prefix('images')->group(function () {
+    Route::get("/", [ImageController::class, "index"]);
+    Route::get("/create", [ImageController::class, "create"]);
+});
