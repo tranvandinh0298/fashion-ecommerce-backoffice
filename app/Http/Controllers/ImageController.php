@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Image\UploadImageRequest;
 use App\Services\ImageService;
 use App\Traits\LogTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
@@ -47,7 +49,7 @@ class ImageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UploadImageRequest $request)
     {
         // echo "thành công";
         // $this->logInfo("thành công");
@@ -57,7 +59,7 @@ class ImageController extends Controller
         // $fileName = $file->getClientOriginalName();
         // $filePath = $file->store('uploads', 'public');
         // $this->logInfo("fileName: ". $fileName. " - ". $filePath);
-
+        // $path = $request->file('file')->store('avatars');
         $result = $this->imageService->uploadImage($request);
         
         return response()->json(['success' => true]);

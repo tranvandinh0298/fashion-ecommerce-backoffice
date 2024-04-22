@@ -7,6 +7,7 @@ use App\Traits\LogTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class ImageService
 {
@@ -37,12 +38,20 @@ class ImageService
 
     public function uploadImage(Request $request)
     {
-        $this->logInfo(__METHOD__ . ' - REQUEST: ' . json_encode([
+        // upload file
+        $originalFileName = $request->file('file')->getClientOriginalName();
+        $path = $request->file('file')->store('public');
+        $path = str_replace("public", "storage", $path);
+        $requestData = [
+            'caption' => $originalFileName,
+            'address' => $path,
+            'status' => RECORD_ACTIVE
+        ];
+
+        $this->logInfo(__METHOD__ . ' - REQUEST: ' . json_encode(array_merge([
             'url' => $this->url . "/images",
-            'image' => $request->file('file'), 
-        ], 256));
-        // $response = Http::attach("image", $request->file('file'), $request->file('file')->getClientOriginalName())->post($this->url . "/images");
-        $response = Http::attach('file', $request->file('file'))->post($this->url . '/images');
+        ], $requestData), 256));
+        $response = Http::post($this->url . '/images',$requestData);
 
         $this->logInfo(__METHOD__ . ' - RESPONSE: ' . json_encode($response->json(), 256));
 
