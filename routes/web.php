@@ -25,4 +25,5 @@ Route::get("/", [DashboardController::class, "index"]);
 Route::prefix('images')->group(function () {
     Route::get("/", [ImageController::class, "index"]);
     Route::get("/create", [ImageController::class, "create"]);
+    Route::post("/store", [ImageController::class, "store"]);
 });

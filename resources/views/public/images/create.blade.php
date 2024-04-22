@@ -17,6 +17,8 @@
                                 </h3>
                             </div>
                             <div class="card-body">
+                                {{-- <div id="myDropzone" class="dropzone"></div> --}}
+                                <input type="hidden" name="" id="store-url" value="{{url("/images/store")}}">
                                 <div id="actions" class="row">
                                     <div class="col-lg-6">
                                         <div class="btn-group w-100">
@@ -103,5 +105,5 @@
 
 <!-- Main JS file -->
 @push('scripts')
-
+    <script src="{{ asset('assets/js/upload_file.js') }}"></script>
 @endPush

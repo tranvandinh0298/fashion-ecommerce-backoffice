@@ -10,8 +10,8 @@ class ImageController extends Controller
 {
     use LogTrait;
 
-    protected ImageService $imageService;
-    
+    protected $imageService;
+
     public function __construct()
     {
         $this->imageService = new ImageService();
@@ -38,8 +38,7 @@ class ImageController extends Controller
      */
     public function create()
     {
-        return response()->view("public.images.create", [
-        ]);
+        return response()->view("public.images.create", []);
     }
 
     /**
@@ -50,7 +49,18 @@ class ImageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // echo "thành công";
+        // $this->logInfo("thành công");
+        // die;
+        // Store the file in storage\app\public folder
+        // $file = $request->file('file');
+        // $fileName = $file->getClientOriginalName();
+        // $filePath = $file->store('uploads', 'public');
+        // $this->logInfo("fileName: ". $fileName. " - ". $filePath);
+
+        $result = $this->imageService->uploadImage($request);
+        
+        return response()->json(['success' => true]);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\RestException;
 use App\Traits\LogTrait;
+use Illuminate\Http\Request;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
@@ -24,6 +25,24 @@ class ImageService
             'url' => $this->url . "/images/all",
         ], 256));
         $response = Http::get($this->url . "/images/all");
+
+        $this->logInfo(__METHOD__ . ' - RESPONSE: ' . json_encode($response->json(), 256));
+
+        // extract data from response
+        $data = $this->extractData($response);
+
+        // return data
+        return $data;
+    }
+
+    public function uploadImage(Request $request)
+    {
+        $this->logInfo(__METHOD__ . ' - REQUEST: ' . json_encode([
+            'url' => $this->url . "/images",
+            'image' => $request->file('file'), 
+        ], 256));
+        // $response = Http::attach("image", $request->file('file'), $request->file('file')->getClientOriginalName())->post($this->url . "/images");
+        $response = Http::attach('file', $request->file('file'))->post($this->url . '/images');
 
         $this->logInfo(__METHOD__ . ' - RESPONSE: ' . json_encode($response->json(), 256));
 
