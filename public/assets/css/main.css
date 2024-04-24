@@ -1,0 +1,9 @@
+.filtr-item {
+    position: relative;
+}
+
+.btn-delete-image {
+    position: absolute;
+    top: 0;
+    right: 7.5px;
+}

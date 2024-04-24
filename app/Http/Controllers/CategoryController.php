@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Image\UploadImageRequest;
-use App\Services\ImageService;
+use App\Services\CategoryService;
 use App\Traits\LogTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
-class ImageController extends Controller
+class CategoryController extends Controller
 {
     use LogTrait;
 
-    protected $imageService;
+    protected $categoryService;
 
     public function __construct()
     {
-        $this->imageService = new ImageService();
+        $this->categoryService = new CategoryService();
     }
 
     /**
@@ -24,12 +22,19 @@ class ImageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $images = $this->imageService->getAllImages();
+        $data = $this->categoryService->getAllCategories($request);
+        $categories = $data['content'];
+        $page = $data['page'];
+        // echo $categories[0]['imageDTO']['address'];
+        // $this->logInfo($categories);
+        // $this->logInfo($page);
+        // die;
 
-        return response()->view("public.images.index", [
-            'images' => $images
+        return response()->view('public.categories.index', [
+            'categories' => $categories,
+            'page' => $page
         ]);
     }
 
@@ -40,7 +45,7 @@ class ImageController extends Controller
      */
     public function create()
     {
-        return response()->view("public.images.create", []);
+        //
     }
 
     /**
@@ -49,20 +54,9 @@ class ImageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UploadImageRequest $request)
+    public function store(Request $request)
     {
-        // echo "thành công";
-        // $this->logInfo("thành công");
-        // die;
-        // Store the file in storage\app\public folder
-        // $file = $request->file('file');
-        // $fileName = $file->getClientOriginalName();
-        // $filePath = $file->store('uploads', 'public');
-        // $this->logInfo("fileName: ". $fileName. " - ". $filePath);
-        // $path = $request->file('file')->store('avatars');
-        $result = $this->imageService->uploadImage($request);
-        
-        return response()->json(['success' => true]);
+        //
     }
 
     /**
@@ -102,13 +96,11 @@ class ImageController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $imageId
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($imageId)
+    public function destroy($id)
     {
-        $result = $this->imageService->deleteImage($imageId);
-        
-        return response()->json(['success' => true]);
+        //
     }
 }

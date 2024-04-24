@@ -34,7 +34,8 @@
                                             </a>
                                         </div>
                                         <div class="btn-group">
-                                            <button type="button" class="btn btn-success btn-block"><i class="fa fa-plus"></i> Thêm mới</button>
+                                            <button type="button" class="btn btn-success btn-block"><i
+                                                    class="fa fa-plus"></i> Thêm mới</button>
                                         </div>
                                     </div>
                                 </div>
@@ -43,10 +44,15 @@
                                         @if (!empty($images))
                                             @foreach ($images as $image)
                                                 <div class="filtr-item col-sm-2" data-category="1" data-sort="white sample">
-                                                    <a href="{{$image['address']}}"
-                                                        data-toggle="lightbox" data-title="{{$image['caption']}}">
-                                                        <img src="{{$image['address']}}"
-                                                            class="img-fluid mb-2" alt="{{$image['caption']}}" />
+                                                    <a href="images/delete/{{ $image['imageId'] }}"
+                                                        onclick="return confirm('Bạn có chắc là muốn xóa ảnh này không?');"
+                                                        class="btn btn-outline-danger btn-delete-image">
+                                                        <i class="fa fa-times-circle"></i>
+                                                    </a>
+                                                    <a href="{{ $image['address'] }}" data-toggle="lightbox"
+                                                        data-title="{{ $image['caption'] }}">
+                                                        <img src="{{ url($image['address'])}}" class="img-fluid mb-2"
+                                                            alt="{{ $image['caption'] }}" />
                                                     </a>
                                                 </div>
                                             @endforeach
@@ -55,90 +61,6 @@
                                                 <strong>Trống!</strong> Hiện chưa có ảnh nào.
                                             </div>
                                         @endif
-                                        {{-- <div class="filtr-item col-sm-2" data-category="1" data-sort="white sample">
-                                            <a href="https://via.placeholder.com/1200/FFFFFF.png?text=1"
-                                                data-toggle="lightbox" data-title="sample 1 - white">
-                                                <img src="https://via.placeholder.com/300/FFFFFF?text=1"
-                                                    class="img-fluid mb-2" alt="white sample" />
-                                            </a>
-                                        </div>
-                                        <div class="filtr-item col-sm-2" data-category="2, 4" data-sort="black sample">
-                                            <a href="https://via.placeholder.com/1200/000000.png?text=2"
-                                                data-toggle="lightbox" data-title="sample 2 - black">
-                                                <img src="https://via.placeholder.com/300/000000?text=2"
-                                                    class="img-fluid mb-2" alt="black sample" />
-                                            </a>
-                                        </div>
-                                        <div class="filtr-item col-sm-2" data-category="3, 4" data-sort="red sample">
-                                            <a href="https://via.placeholder.com/1200/FF0000/FFFFFF.png?text=3"
-                                                data-toggle="lightbox" data-title="sample 3 - red">
-                                                <img src="https://via.placeholder.com/300/FF0000/FFFFFF?text=3"
-                                                    class="img-fluid mb-2" alt="red sample" />
-                                            </a>
-                                        </div>
-                                        <div class="filtr-item col-sm-2" data-category="3, 4" data-sort="red sample">
-                                            <a href="https://via.placeholder.com/1200/FF0000/FFFFFF.png?text=4"
-                                                data-toggle="lightbox" data-title="sample 4 - red">
-                                                <img src="https://via.placeholder.com/300/FF0000/FFFFFF?text=4"
-                                                    class="img-fluid mb-2" alt="red sample" />
-                                            </a>
-                                        </div>
-                                        <div class="filtr-item col-sm-2" data-category="2, 4" data-sort="black sample">
-                                            <a href="https://via.placeholder.com/1200/000000.png?text=5"
-                                                data-toggle="lightbox" data-title="sample 5 - black">
-                                                <img src="https://via.placeholder.com/300/000000?text=5"
-                                                    class="img-fluid mb-2" alt="black sample" />
-                                            </a>
-                                        </div>
-                                        <div class="filtr-item col-sm-2" data-category="1" data-sort="white sample">
-                                            <a href="https://via.placeholder.com/1200/FFFFFF.png?text=6"
-                                                data-toggle="lightbox" data-title="sample 6 - white">
-                                                <img src="https://via.placeholder.com/300/FFFFFF?text=6"
-                                                    class="img-fluid mb-2" alt="white sample" />
-                                            </a>
-                                        </div>
-                                        <div class="filtr-item col-sm-2" data-category="1" data-sort="white sample">
-                                            <a href="https://via.placeholder.com/1200/FFFFFF.png?text=7"
-                                                data-toggle="lightbox" data-title="sample 7 - white">
-                                                <img src="https://via.placeholder.com/300/FFFFFF?text=7"
-                                                    class="img-fluid mb-2" alt="white sample" />
-                                            </a>
-                                        </div>
-                                        <div class="filtr-item col-sm-2" data-category="2, 4" data-sort="black sample">
-                                            <a href="https://via.placeholder.com/1200/000000.png?text=8"
-                                                data-toggle="lightbox" data-title="sample 8 - black">
-                                                <img src="https://via.placeholder.com/300/000000?text=8"
-                                                    class="img-fluid mb-2" alt="black sample" />
-                                            </a>
-                                        </div>
-                                        <div class="filtr-item col-sm-2" data-category="3, 4" data-sort="red sample">
-                                            <a href="https://via.placeholder.com/1200/FF0000/FFFFFF.png?text=9"
-                                                data-toggle="lightbox" data-title="sample 9 - red">
-                                                <img src="https://via.placeholder.com/300/FF0000/FFFFFF?text=9"
-                                                    class="img-fluid mb-2" alt="red sample" />
-                                            </a>
-                                        </div>
-                                        <div class="filtr-item col-sm-2" data-category="1" data-sort="white sample">
-                                            <a href="https://via.placeholder.com/1200/FFFFFF.png?text=10"
-                                                data-toggle="lightbox" data-title="sample 10 - white">
-                                                <img src="https://via.placeholder.com/300/FFFFFF?text=10"
-                                                    class="img-fluid mb-2" alt="white sample" />
-                                            </a>
-                                        </div>
-                                        <div class="filtr-item col-sm-2" data-category="1" data-sort="white sample">
-                                            <a href="https://via.placeholder.com/1200/FFFFFF.png?text=11"
-                                                data-toggle="lightbox" data-title="sample 11 - white">
-                                                <img src="https://via.placeholder.com/300/FFFFFF?text=11"
-                                                    class="img-fluid mb-2" alt="white sample" />
-                                            </a>
-                                        </div>
-                                        <div class="filtr-item col-sm-2" data-category="2, 4" data-sort="black sample">
-                                            <a href="https://via.placeholder.com/1200/000000.png?text=12"
-                                                data-toggle="lightbox" data-title="sample 12 - black">
-                                                <img src="https://via.placeholder.com/300/000000?text=12"
-                                                    class="img-fluid mb-2" alt="black sample" />
-                                            </a>
-                                        </div> --}}
                                     </div>
                                 </div>
                             </div>
@@ -155,4 +77,5 @@
 
 <!-- Main JS file -->
 @push('scripts')
+    <script src="{{ asset('assets/js/upload_file.js') }}"></script>
 @endPush

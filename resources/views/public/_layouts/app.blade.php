@@ -45,6 +45,15 @@
     <link rel="stylesheet" href="{{ asset('assets/AdminLTE/plugins/bs-stepper/css/bs-stepper.min.css') }}" />
     <!-- dropzonejs -->
     <link rel="stylesheet" href="{{ asset('assets/AdminLTE/plugins/dropzone/min/dropzone.min.css') }}" />
+    <!-- DataTables -->
+    <link rel="stylesheet"
+        href="{{ asset('assets/AdminLTE/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}" />
+    <link rel="stylesheet"
+        href="{{ asset('assets/AdminLTE/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}" />
+    <link rel="stylesheet"
+        href="{{ asset('assets/AdminLTE/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}" />
+    <!-- Custom -->
+    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -114,7 +123,8 @@
     <!-- Select2 -->
     <script src="{{ asset('assets/AdminLTE/plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- Bootstrap4 Duallistbox -->
-    <script src="{{ asset('assets/AdminLTE/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js') }}">
+    </script>
     <!-- InputMask -->
     <script src="{{ asset('assets/AdminLTE/plugins/inputmask/jquery.inputmask.min.js') }}"></script>
     <!-- bootstrap color picker -->
@@ -125,6 +135,19 @@
     <script src="{{ asset('assets/AdminLTE/plugins/bs-stepper/js/bs-stepper.min.js') }}"></script>
     <!-- dropzonejs -->
     <script src="{{ asset('assets/AdminLTE/plugins/dropzone/min/dropzone.min.js') }}"></script>
+    <!-- DataTables  & Plugins -->
+    <script src="{{ asset('assets/AdminLTE/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/jszip/jszip.min.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/pdfmake/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('assets/AdminLTE/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
     @stack('scripts')
 
     <script>
@@ -229,8 +252,7 @@
                 $(this).bootstrapSwitch('state', $(this).prop('checked'));
             })
 
-        })
-        
+        });
     </script>
 </body>
 

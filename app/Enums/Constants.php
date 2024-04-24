@@ -16,3 +16,13 @@ const DEFAULT_PAGE_LIMIT = 10;
 const RECORD_ACTIVE = 1;
 const RECORD_INACTIVE = 0;
 
+const CATEGORY_TYPE = [
+    0 => 'regular category',
+    1 => 'collection'
+];
+
+const RECORD_STATUS = [
+    0 => 'inactive',
+    1 => 'active'
+];
+

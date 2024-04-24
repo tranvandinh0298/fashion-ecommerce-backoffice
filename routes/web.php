@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImageController;
@@ -26,4 +27,11 @@ Route::prefix('images')->group(function () {
     Route::get("/", [ImageController::class, "index"]);
     Route::get("/create", [ImageController::class, "create"]);
     Route::post("/store", [ImageController::class, "store"]);
+    Route::get("/delete", [ImageController::class, "destroy"]);
+});
+
+Route::prefix('categories')->group(function () {
+    Route::get("/", [CategoryController::class, "index"]);
+    Route::get("/create", [CategoryController::class, "create"]);
+    Route::post("/store", [CategoryController::class, "store"]);
 });

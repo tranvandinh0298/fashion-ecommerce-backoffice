@@ -9,7 +9,7 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
-class ImageService
+class CategoryService
 {
     use LogTrait;
 
@@ -20,40 +20,13 @@ class ImageService
         $this->url = config("rest.core.url");
     }
 
-    public function getAllImages()
+    public function getAllCategories(Request $request)
     {
         $this->logInfo(__METHOD__ . ' - REQUEST: ' . json_encode([
-            'url' => $this->url . "/images/all",
+            'url' => $this->url . "/categories",
         ], 256));
-        
-        $response = Http::get($this->url . "/images/all");
 
-        $this->logInfo(__METHOD__ . ' - RESPONSE: ' . json_encode($response->json(), 256));
-
-        // extract data from response
-        $data = $this->extractData($response);
-
-        // return data
-        return $data;
-    }
-
-    public function uploadImage(Request $request)
-    {
-        // upload file
-        $originalFileName = $request->file('file')->getClientOriginalName();
-        $path = $request->file('file')->store('public');
-        $path = str_replace("public", "storage", $path);
-        $requestData = [
-            'caption' => $originalFileName,
-            'address' => $path,
-            'status' => RECORD_ACTIVE
-        ];
-
-        $this->logInfo(__METHOD__ . ' - REQUEST: ' . json_encode(array_merge([
-            'url' => $this->url . "/images",
-        ], $requestData), 256));
-
-        $response = Http::post($this->url . '/images', $requestData);
+        $response = Http::get($this->url . "/categories");
 
         $this->logInfo(__METHOD__ . ' - RESPONSE: ' . json_encode($response->json(), 256));
 
