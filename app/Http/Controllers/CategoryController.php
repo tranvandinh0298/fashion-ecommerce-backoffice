@@ -3,18 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Services\CategoryService;
+use App\Services\ImageService;
 use App\Traits\LogTrait;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CategoryController extends Controller
 {
     use LogTrait;
 
     protected $categoryService;
+    protected $imageService;
 
     public function __construct()
     {
         $this->categoryService = new CategoryService();
+        $this->imageService = new ImageService();
     }
 
     /**
@@ -25,15 +29,19 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $data = $this->categoryService->getAllCategories($request);
-        $categories = $data['content'];
+
         $page = $data['page'];
-        // echo $categories[0]['imageDTO']['address'];
-        // $this->logInfo($categories);
-        // $this->logInfo($page);
-        // die;
+
+        $paginatedData = new LengthAwarePaginator(
+            $data['content'],
+            $page['totalElements'],
+            $page['size'],
+            $page['number'] + 1,
+            ['path' => $request->url()]
+        );
 
         return response()->view('public.categories.index', [
-            'categories' => $categories,
+            'categories' => $paginatedData,
             'page' => $page
         ]);
     }
@@ -45,7 +53,11 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        $images = $this->imageService->getAllImages();
+
+        return response()->view('public.categories.create', [
+            'images' => $images,
+        ]);
     }
 
     /**

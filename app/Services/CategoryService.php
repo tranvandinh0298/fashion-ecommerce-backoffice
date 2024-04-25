@@ -22,11 +22,15 @@ class CategoryService
 
     public function getAllCategories(Request $request)
     {
+        $pageNum = $request->query("page", 1) - 1;
+        $pageSize = $request->query("pageSize", 10);
+
         $this->logInfo(__METHOD__ . ' - REQUEST: ' . json_encode([
             'url' => $this->url . "/categories",
+            'request' => $request->all()
         ], 256));
 
-        $response = Http::get($this->url . "/categories");
+        $response = Http::get($this->url . "/categories", ['page' => $pageNum, 'limit' => $pageSize]);
 
         $this->logInfo(__METHOD__ . ' - RESPONSE: ' . json_encode($response->json(), 256));
 
