@@ -1,9 +1,16 @@
 <?php
 
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ImageController;
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FileController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\PostCategoryController;
+use App\Http\Controllers\Admin\PostTagController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ShippingController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,17 +28,57 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::get("/", [DashboardController::class, "index"]);
+Route::get('/login', [AuthController::class, 'login'])->name("login");
+Route::post('/login', [AuthController::class, 'authenticate']);
 
-Route::prefix('images')->group(function () {
-    Route::get("/", [ImageController::class, "index"]);
-    Route::get("/create", [ImageController::class, "create"]);
-    Route::post("/store", [ImageController::class, "store"]);
-    Route::get("/delete", [ImageController::class, "destroy"]);
+Route::prefix("admin")->middleware(['auth', 'isAdmin'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('admin');
+    Route::get('/file-manager', [FileController::class, 'index'])->name('file-manager');
+
+    // user route
+    Route::resource('users', UserController::class);
+    // Banner
+    Route::resource('banner', BannerController::class);
+    // Brand
+    Route::resource('brand', BrandController::class);
+    // Profile
+    Route::get('/profile', 'DashboardController@profile')->name('admin-profile');
+    Route::post('/profile/{id}', 'DashboardController@profileUpdate')->name('profile-update');
+    // Category
+    Route::resource('/category', CategoryController::class);
+    // Product
+    Route::resource('/product', ProductController::class);
+    // Ajax for sub category
+    Route::post('/category/{id}/child', [CategoryController::class, 'getChildByParent']);
+    // POST category
+    Route::resource('/post-category', PostCategoryController::class);
+    // Post tag
+    Route::resource('/post-tag', PostTagController::class);
+    // Post
+    Route::resource('/post', PostController::class);
+    // // Message
+    // Route::resource('/message', 'MessageController');
+    // Route::get('/message/five', 'MessageController@messageFive')->name('messages.five');
+
+    // // Order
+    // Route::resource('/order', 'OrderController');
+    // // Shipping
+    Route::resource('/shipping', ShippingController::class);
+    // // Coupon
+    // Route::resource('/coupon', 'CouponController');
+    // // Settings
+    // Route::get('settings', 'DashboardController@settings')->name('settings');
+    // Route::post('setting/update', 'DashboardController@settingsUpdate')->name('settings.update');
+
+    // // Notification
+    // Route::get('/notification/{id}', 'NotificationController@show')->name('admin.notification');
+    // Route::get('/notifications', 'NotificationController@index')->name('all.notification');
+    // Route::delete('/notification/{id}', 'NotificationController@delete')->name('notification.delete');
+    // // Password Change
+    // Route::get('change-password', 'DashboardController@changePassword')->name('change.password.form');
+    // Route::post('change-password', 'DashboardController@changPasswordStore')->name('change.password');
 });
 
-Route::prefix('categories')->group(function () {
-    Route::get("/", [CategoryController::class, "index"]);
-    Route::get("/create", [CategoryController::class, "create"]);
-    Route::post("/store", [CategoryController::class, "store"]);
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
+    \UniSharp\LaravelFilemanager\Lfm::routes();
 });

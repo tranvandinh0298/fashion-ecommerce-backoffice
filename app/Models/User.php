@@ -21,7 +21,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'photo',
+        'status',
+        'provider',
+        'provider_id',
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -41,4 +47,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }
