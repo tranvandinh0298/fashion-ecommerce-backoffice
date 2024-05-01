@@ -1,5 +1,4 @@
 @extends('admin.layouts.app')
-@section('title', 'Ecommerce Laravel || All Notifications')
 @section('main-content')
     <div class="card">
         <div class="row">
@@ -7,34 +6,36 @@
                 @include('admin.components.notification')
             </div>
         </div>
-        <h5 class="card-header">Notifications</h5>
+        <h5 class="card-header">Messages</h5>
         <div class="card-body">
-            @if (count(Auth::user()->Notifications) > 0)
-                <table class="table  table-hover admin-table" id="notification-dataTable">
+            @if (count($messages) > 0)
+                <table class="table message-table" id="message-dataTable">
                     <thead>
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Time</th>
-                            <th scope="col">Title</th>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Subject</th>
+                            <th scope="col">Date</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (Auth::user()->Notifications as $notification)
+                        @foreach ($messages as $message)
                             <tr
-                                class="@if ($notification->unread()) bg-light border-left-light @else border-left-success @endif">
+                                class="@if ($message->read_at) border-left-success @else bg-light border-left-warning @endif">
                                 <td scope="row">{{ $loop->index + 1 }}</td>
-                                <td>{{ $notification->created_at->format('F d, Y h:i A') }}</td>
-                                <td>{{ $notification->data['title'] }}</td>
+                                <td>{{ $message->name }} {{ $message->read_at }}</td>
+                                <td>{{ $message->subject }}</td>
+                                <td>{{ $message->created_at->format('F d, Y h:i A') }}</td>
                                 <td>
-                                    <a href="{{ route('admin.notification', $notification->id) }}"
+                                    <a href="{{ route('message.show', $message->id) }}"
                                         class="btn btn-primary btn-sm float-left mr-1"
                                         style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip"
                                         title="view" data-placement="bottom"><i class="fas fa-eye"></i></a>
-                                    <form method="POST" action="{{ route('notification.delete', $notification->id) }}">
+                                    <form method="POST" action="{{ route('message.destroy', [$message->id]) }}">
                                         @csrf
                                         @method('delete')
-                                        <button class="btn btn-danger btn-sm dltBtn" data-id={{ $notification->id }}
+                                        <button class="btn btn-danger btn-sm dltBtn" data-id={{ $message->id }}
                                             style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip"
                                             data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
                                     </form>
@@ -43,8 +44,11 @@
                         @endforeach
                     </tbody>
                 </table>
+                <nav class="blog-pagination justify-content-center d-flex">
+                    {{ $messages->links() }}
+                </nav>
             @else
-                <h2>Notifications Empty!</h2>
+                <h2>Messages Empty!</h2>
             @endif
         </div>
     </div>
@@ -52,6 +56,20 @@
 @push('styles')
     <link href="{{ asset('assets/admin/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+    <style>
+        div.dataTables_wrapper div.dataTables_paginate {
+            display: none;
+        }
+
+        .zoom {
+            transition: transform .2s;
+            /* Animation */
+        }
+
+        .zoom:hover {
+            transform: scale(3.2);
+        }
+    </style>
 @endpush
 @push('scripts')
     <script src="{{ asset('assets/admin/vendor/datatables/jquery.dataTables.min.js') }}"></script>
@@ -61,10 +79,10 @@
     <!-- Page level custom scripts -->
     <script src="{{ asset('assets/admin/js/demo/datatables-demo.js') }}"></script>
     <script>
-        $('#notification-dataTable').DataTable({
+        $('#message-dataTable').DataTable({
             "columnDefs": [{
                 "orderable": false,
-                "targets": [3]
+                "targets": [4]
             }]
         });
 

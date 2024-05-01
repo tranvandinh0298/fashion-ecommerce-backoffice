@@ -121,8 +121,7 @@
 
     <!--Orders -->
     <li class="nav-item">
-        {{-- <a class="nav-link" href="{{ route('order.index') }}"> --}}
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{ route('order.index') }}">
             <i class="fas fa-cart-plus"></i>
             <span>Orders</span>
         </a>
@@ -156,10 +155,8 @@
         <div id="postCollapse" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Post Options:</h6>
-                {{-- <a class="collapse-item" href="{{ route('post.index') }}">Posts</a> --}}
-                <a class="collapse-item" href="#">Posts</a>
-                {{-- <a class="collapse-item" href="{{ route('post.create') }}">Add Post</a> --}}
-                <a class="collapse-item" href="#">Add Post</a>
+                <a class="collapse-item" href="{{ route('post.index') }}">Posts</a>
+                <a class="collapse-item" href="{{ route('post.create') }}">Add Post</a>
             </div>
         </div>
     </li>
@@ -175,10 +172,8 @@
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Category Options:</h6>
-                {{-- <a class="collapse-item" href="{{ route('post-category.index') }}">Category</a> --}}
-                <a class="collapse-item" href="#">Category</a>
-                {{-- <a class="collapse-item" href="{{ route('post-category.create') }}">Add Category</a> --}}
-                <a class="collapse-item" href="#">Add Category</a>
+                <a class="collapse-item" href="{{ route('post-category.index') }}">Category</a>
+                <a class="collapse-item" href="{{ route('post-category.create') }}">Add Category</a>
             </div>
         </div>
     </li>
@@ -193,10 +188,8 @@
         <div id="tagCollapse" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Tag Options:</h6>
-                {{-- <a class="collapse-item" href="{{ route('post-tag.index') }}">Tag</a> --}}
-                <a class="collapse-item" href="#">Tag</a>
-                {{-- <a class="collapse-item" href="{{ route('post-tag.create') }}">Add Tag</a> --}}
-                <a class="collapse-item" href="#">Add Tag</a>
+                <a class="collapse-item" href="{{ route('post-tag.index') }}">Tag</a>
+                <a class="collapse-item" href="{{ route('post-tag.create') }}">Add Tag</a>
             </div>
         </div>
     </li>
@@ -218,22 +211,19 @@
         General Settings
     </div>
     <li class="nav-item">
-        {{-- <a class="nav-link" href="{{ route('coupon.index') }}"> --}}
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{ route('coupon.index') }}">
             <i class="fas fa-table"></i>
             <span>Coupon</span></a>
     </li>
     <!-- Users -->
     <li class="nav-item">
-        {{-- <a class="nav-link" href="{{ route('users.index') }}"> --}}
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{ route('users.index') }}">
             <i class="fas fa-users"></i>
             <span>Users</span></a>
     </li>
     <!-- General settings -->
     <li class="nav-item">
-        {{-- <a class="nav-link" href="{{ route('settings') }}"> --}}
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{ route('settings') }}">
             <i class="fas fa-cog"></i>
             <span>Settings</span></a>
     </li>

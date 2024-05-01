@@ -6,7 +6,12 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FileController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\Admin\MessageController;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PostCategoryController;
+use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostTagController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ShippingController;
@@ -42,8 +47,8 @@ Route::prefix("admin")->middleware(['auth', 'isAdmin'])->group(function () {
     // Brand
     Route::resource('brand', BrandController::class);
     // Profile
-    Route::get('/profile', 'DashboardController@profile')->name('admin-profile');
-    Route::post('/profile/{id}', 'DashboardController@profileUpdate')->name('profile-update');
+    Route::get('/profile', [DashboardController::class, 'profile'])->name('admin-profile');
+    Route::post('/profile/{id}', [DashboardController::class, 'profileUpdate'])->name('profile-update');
     // Category
     Route::resource('/category', CategoryController::class);
     // Product
@@ -56,27 +61,27 @@ Route::prefix("admin")->middleware(['auth', 'isAdmin'])->group(function () {
     Route::resource('/post-tag', PostTagController::class);
     // Post
     Route::resource('/post', PostController::class);
-    // // Message
-    // Route::resource('/message', 'MessageController');
-    // Route::get('/message/five', 'MessageController@messageFive')->name('messages.five');
+    // Message
+    Route::resource('/message', MessageController::class);
+    Route::get('/message/five', [MessageController::class, 'messageFive'])->name('messages.five');
 
-    // // Order
-    // Route::resource('/order', 'OrderController');
-    // // Shipping
+    // Order
+    Route::resource('/order', OrderController::class);
+    // Shipping
     Route::resource('/shipping', ShippingController::class);
-    // // Coupon
-    // Route::resource('/coupon', 'CouponController');
-    // // Settings
-    // Route::get('settings', 'DashboardController@settings')->name('settings');
-    // Route::post('setting/update', 'DashboardController@settingsUpdate')->name('settings.update');
+    // Coupon
+    Route::resource('/coupon', CouponController::class);
+    // Settings
+    Route::get('settings', [DashboardController::class, 'settings'])->name('settings');
+    Route::post('setting/update', [DashboardController::class, 'settingsUpdate'])->name('settings.update');
 
-    // // Notification
-    // Route::get('/notification/{id}', 'NotificationController@show')->name('admin.notification');
-    // Route::get('/notifications', 'NotificationController@index')->name('all.notification');
-    // Route::delete('/notification/{id}', 'NotificationController@delete')->name('notification.delete');
-    // // Password Change
-    // Route::get('change-password', 'DashboardController@changePassword')->name('change.password.form');
-    // Route::post('change-password', 'DashboardController@changPasswordStore')->name('change.password');
+    // Notification
+    Route::get('/notification/{id}', [NotificationController::class, 'show'])->name('admin.notification');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('all.notification');
+    Route::delete('/notification/{id}', [NotificationController::class, 'delete'])->name('notification.delete');
+    // Password Change
+    Route::get('change-password', [DashboardController::class, 'changePassword'])->name('change.password.form');
+    Route::post('change-password', [DashboardController::class, 'changPasswordStore'])->name('change.password');
 });
 
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {

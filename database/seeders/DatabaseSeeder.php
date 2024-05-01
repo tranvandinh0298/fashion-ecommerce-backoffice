@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
@@ -23,64 +24,58 @@ class DatabaseSeeder extends Seeder
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
 
+
+        DB::table('coupons')->truncate();
+        $data = array(
+            array(
+                'code' => 'abc123',
+                'type' => 'fixed',
+                'value' => '300',
+                'status' => 'active'
+            ),
+            array(
+                'code' => '111111',
+                'type' => 'percent',
+                'value' => '10',
+                'status' => 'active'
+            ),
+        );
+        DB::table('coupons')->insert($data);
+
+        DB::table('settings')->truncate();
+        $data = array(
+            'description' => "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. sed ut perspiciatis unde sunt in culpa qui officia deserunt mollit anim id est laborum. sed ut perspiciatis unde omnis iste natus error sit voluptatem Excepteu
+
+                            sunt in culpa qui officia deserunt mollit anim id est laborum. sed ut perspiciatis Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. sed ut perspi deserunt mollit anim id est laborum. sed ut perspi.",
+            'short_des' => "Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus.",
+            'photo' => "image.jpg",
+            'logo' => 'logo.jpg',
+            'address' => "115 Test Street, Test Country",
+            'email' => "codeastro.com",
+            'phone' => "1234567777",
+        );
+        DB::table('settings')->insert($data);
+
         // user
-        User::truncate();
+        DB::table('settings')->truncate();
         User::factory()->count(50)->create();
+        $data = array(
+            array(
+                'name' => 'CodeAstro',
+                'email' => 'admin@mail.com',
+                'password' => Hash::make('123456'),
+                'role' => 'admin',
+                'status' => 'active'
+            ),
+            array(
+                'name' => 'Customer A',
+                'email' => 'customer@mail.com',
+                'password' => Hash::make('123456'),
+                'role' => 'user',
+                'status' => 'active'
+            ),
+        );
 
-        // image
-        $files = Storage::disk('images')->files();
-        $images = [];
-        foreach ($files as $file) {
-            $images[] = [
-                'caption' => $file,
-                'address' => public_path($file),
-                'status' => 1,
-            ];
-        }
-        Image::truncate();
-        DB::table('images')->insert($images);
-
-        Category::truncate();
-        DB::table("categories")->insert([
-            [
-                'name' => 'Men',
-                'slug' => 'men',
-                'description' => 'Men clothing',
-                'status' => 1,
-                'image_id' => Image::all()->random()->id,
-            ],
-            [
-                'name' => 'Bag',
-                'slug' => 'bag',
-                'description' => 'Bag',
-                'status' => 1,
-                'image_id' => Image::all()->random()->id,
-            ],
-            [
-                'name' => 'Shoes',
-                'slug' => 'shoes',
-                'description' => 'Shoes',
-                'status' => 1,
-                'image_id' => Image::all()->random()->id,
-            ],
-            [
-                'name' => 'Watches',
-                'slug' => 'watches',
-                'description' => 'Watches',
-                'status' => 1,
-                'image_id' => Image::all()->random()->id,
-            ]
-        ]);
-
-        // Truncate the pivot table
-        // DB::table('category_product')->truncate();
-        // Product::truncate();
-        // Product::factory()->count(50)->create()->each(function ($product) {
-        //     // Attach random categories to each product
-        //     $categories = Category::all()->pluck('id')->random(); // Randomly select 1 to 3 category IDs
-        //     $product->categories()->attach($categories);
-        // });
-
-        // 
+        DB::table('users')->insert($data);
     }
 }

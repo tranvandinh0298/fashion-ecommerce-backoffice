@@ -36,7 +36,7 @@ class DashboardController extends Controller
     {
         $profile = Auth()->user();
         // return $profile;
-        return view('backend.users.profile')->with('profile', $profile);
+        return view('admin.users.profile')->with('profile', $profile);
     }
 
     public function profileUpdate(Request $request, $id)
@@ -56,7 +56,7 @@ class DashboardController extends Controller
     public function settings()
     {
         $data = Settings::first();
-        return view('backend.setting')->with('data', $data);
+        return view('admin.dashboard.setting')->with('data', $data);
     }
 
     public function settingsUpdate(Request $request)
@@ -86,7 +86,7 @@ class DashboardController extends Controller
 
     public function changePassword()
     {
-        return view('backend.layouts.changePassword');
+        return view('admin.components.changePassword');
     }
     public function changPasswordStore(Request $request)
     {
@@ -115,6 +115,6 @@ class DashboardController extends Controller
             $array[++$key] = [$value->day_name, $value->count];
         }
         //  return $data;
-        return view('backend.index')->with('course', json_encode($array));
+        return view('admin.dashboard.index')->with('course', json_encode($array));
     }
 }
