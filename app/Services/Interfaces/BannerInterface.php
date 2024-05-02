@@ -6,10 +6,10 @@ use App\Models\Banner;
 
 interface BannerInterface
 {
-    public function getAllBanners(): array;
-    public function getBannerById(): ?Banner;
-    public function createBanner(array $data): ?Banner;
-    public function updateBanner(int $id, array $data): void;
-    public function softDeleteBanner(int $id): bool;
-    public function deleteBanner(int $id): bool;
+    public function getAllBanners();
+    public function getBannerById();
+    public function createBanner(array $data);
+    public function updateBanner(int $id, array $data);
+    public function softDeleteBanner(int $id);
+    public function deleteBanner(int $id);
 }

@@ -17,69 +17,73 @@ trait RequestToCoreTrait
 {
     use LogTrait;
 
-    public function sendGetRequest($url, $data)
+    public function sendGetRequest($url, $data, $method = __METHOD__)
     {
-        $this->logRequestBeforeSend($url, $data);
+        $this->logRequestBeforeSend($url, $data, $method);
+
+        // $response = Cache::remember($url, 180, function () use ($url, $data) {
+        //     return 
+        // });
 
         $response = Http::get($url, $data);
 
-        $this->logResponseAfterReceive($response);
+        $this->logResponseAfterReceive($response, $method);
 
         $data = $this->extractData($response);
 
         return $data;
     }
 
-    public function sendPostRequest($url, $data)
+    public function sendPostRequest($url, $data, $method = __METHOD__)
     {
-        $this->logRequestBeforeSend($url, $data);
+        $this->logRequestBeforeSend($url, $data, $method);
 
         $response = Http::post($url, $data);
 
-        $this->logResponseAfterReceive($response);
+        $this->logResponseAfterReceive($response, $method);
 
         $data = $this->extractData($response);
 
         return $data;
     }
 
-    public function sendPatchRequest($url, $data)
+    public function sendPatchRequest($url, $data, $method = __METHOD__)
     {
-        $this->logRequestBeforeSend($url, $data);
+        $this->logRequestBeforeSend($url, $data, $method);
 
         $response = Http::patch($url, $data);
 
-        $this->logResponseAfterReceive($response);
+        $this->logResponseAfterReceive($response, $method);
 
         $data = $this->extractData($response);
 
         return $data;
     }
 
-    public function sendDeleteRequest($url, $data)
+    public function sendDeleteRequest($url, $data, $method = __METHOD__)
     {
-        $this->logRequestBeforeSend($url, $data);
+        $this->logRequestBeforeSend($url, $data, $method);
 
         $response = Http::delete($url, $data);
 
-        $this->logResponseAfterReceive($response);
+        $this->logResponseAfterReceive($response, $method);
 
         $data = $this->extractData($response);
 
         return $data;
     }
 
-    public function logRequestBeforeSend($url, $data)
+    public function logRequestBeforeSend($url, $data, $method)
     {
-        $this->logInfo(__METHOD__ . ' - REQUEST: ' . json_encode([
+        $this->logInfo($method . ' - REQUEST: ' . json_encode([
             'url' => $url,
             'requestData' => $data
         ], 256));
     }
 
-    public function logResponseAfterReceive(Response $response)
+    public function logResponseAfterReceive(Response $response, $method)
     {
-        $this->logInfo(__METHOD__ . ' - RESPONSE: ' . json_encode($response->json(), 256));
+        $this->logInfo($method . ' - RESPONSE: ' . json_encode($response->json(), 256));
     }
 
     protected function extractData(Response $response): array

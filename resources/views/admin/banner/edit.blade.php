@@ -5,7 +5,7 @@
 <div class="card">
     <h5 class="card-header">Edit Banner</h5>
     <div class="card-body">
-      <form method="post" action="{{route('banner.update',$banner->id)}}">
+      <form method="post" action="{{route('banners.update',$banner->id)}}">
         @csrf 
         @method('PATCH')
         <div class="form-group">

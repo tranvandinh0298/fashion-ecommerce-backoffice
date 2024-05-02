@@ -43,7 +43,17 @@ Route::prefix("admin")->middleware(['auth', 'isAdmin'])->group(function () {
     // user route
     Route::resource('users', UserController::class);
     // Banner
-    Route::resource('banner', BannerController::class);
+    // Route::resource('banner', BannerController::class);
+    Route::prefix("banners")->group(function () {
+        Route::get("/", [BannerController::class, 'index'])->name("banners.index");
+        Route::get("/ajax-get-banners", [BannerController::class, 'getBanners'])->name("banners.get");
+        Route::get("/create", [BannerController::class, 'create'])->name("banners.create");
+        Route::post("/", [BannerController::class, 'store'])->name("banners.store");
+        Route::get("/{id}", [BannerController::class, 'show'])->name("banners.show");
+        Route::get("/{id}/edit", [BannerController::class, 'edit'])->name("banners.edit");
+        Route::patch("/{id}", [BannerController::class, 'update'])->name("banners.update");
+        Route::delete("/{id}", [BannerController::class, 'destroy'])->name("banners.destroy");
+    });
     // Brand
     Route::resource('brand', BrandController::class);
     // Profile

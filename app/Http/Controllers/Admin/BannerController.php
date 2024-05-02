@@ -3,20 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Traits\LogTrait;
 use Illuminate\Http\Request;
 use App\Models\Banner;
 use App\Services\BannerService;
+use App\Traits\DisplayHtmlTrait;
 use Illuminate\Support\Str;
 
 class BannerController extends Controller
 {
+    use LogTrait;
     protected $bannerService;
 
     public function __construct()
     {
         $this->bannerService = new BannerService();
     }
-
 
     /**
      * Display a listing of the resource.
@@ -25,10 +27,41 @@ class BannerController extends Controller
      */
     public function index()
     {
-        $banner = Banner::orderBy('id', 'DESC')->paginate(10);
+        $data = $this->bannerService->getAllBanners();
+        $banners = collect($data['content']);
+
+        $page = $data['page'];
         return response()->view('admin.banner.index', [
-            'banners' => $banner
+            'banners' => $banners,
+            'page' => $page
         ]);
+    }
+
+    public function getBanners()
+    {
+        $this->logInfo(request()->all());
+
+        $data = $this->bannerService->getAllBanners();
+
+        $banners = collect($data['content']);
+
+        $page = $data['page'];
+
+        $this->logInfo([
+            'draw' => request()->get("draw"),
+            'recordsTotal' => $page['totalElements'],
+            'recordsFiltered' => $page['totalElements'],
+            'data' => $banners
+        ]);
+
+        return response()->json(
+            [
+                'draw' => request()->get("draw"),
+                'recordsTotal' => $page['totalElements'],
+                'recordsFiltered' => $page['totalElements'],
+                'data' => $banners
+            ]
+        );
     }
 
     /**
@@ -64,13 +97,13 @@ class BannerController extends Controller
         }
         $data['slug'] = $slug;
         // return $slug;
-        $status = Banner::create($data);
+        $status = $this->bannerService->createBanner($data);
         if ($status) {
             request()->session()->flash('success', 'Banner has been added successfully');
         } else {
             request()->session()->flash('error', 'Error occurred while adding banner');
         }
-        return redirect()->route('banner.index');
+        return redirect()->route('banners.index');
     }
 
     /**
@@ -128,7 +161,7 @@ class BannerController extends Controller
         } else {
             request()->session()->flash('error', 'Error occurred while updating banner');
         }
-        return redirect()->route('banner.index');
+        return redirect()->route('banners.index');
     }
 
     /**
@@ -146,6 +179,6 @@ class BannerController extends Controller
         } else {
             request()->session()->flash('error', 'Error occurred while deleting banner');
         }
-        return redirect()->route('banner.index');
+        return redirect()->route('banners.index');
     }
 }
