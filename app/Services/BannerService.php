@@ -35,18 +35,32 @@ class BannerService implements BannerInterface
 
         $data = $this->sendGetRequest($this->url . "/banners", $requestData, __METHOD__);
 
+        if (empty($data)) {
+            $data = [
+                "content" => [],
+                "page" => [
+                    "size" => $pageSize,
+                    "totalElements" => 0,
+                    "totalPages" => 0,
+                    "number" => 0
+                ],
+            ];
+        }
+
         $content = $data['content'];
 
-        $data['content'] = collect($content)->map(function ($banner) {
-            return [
-                0 => $banner['bannerId'],
-                1 => $banner['title'],
-                2 => $banner['slug'],
-                3 => $this->displayPhoto($banner['photo']),
-                4 => $this->displayStatus($banner['status']),
-                5 => $this->displayAction($banner['bannerId'])
-            ];
-        });
+        if (!empty($content)) {
+            $data['content'] = collect($content)->map(function ($banner) {
+                return [
+                    0 => $banner['bannerId'],
+                    1 => $banner['title'],
+                    2 => $banner['slug'],
+                    3 => $this->displayPhoto($banner['photo']),
+                    4 => $this->displayStatus($banner['status']),
+                    5 => $this->displayAction($banner['bannerId'])
+                ];
+            });
+        }
 
         return $data;
     }

@@ -27,13 +27,13 @@ class BannerController extends Controller
      */
     public function index()
     {
-        $data = $this->bannerService->getAllBanners();
-        $banners = collect($data['content']);
+        // $data = $this->bannerService->getAllBanners();
+        // $banners = collect($data['content']);
 
-        $page = $data['page'];
+        // $page = $data['page'];
         return response()->view('admin.banner.index', [
-            'banners' => $banners,
-            'page' => $page
+            // 'banners' => $banners,
+            // 'page' => $page
         ]);
     }
 
