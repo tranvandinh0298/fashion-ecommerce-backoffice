@@ -25,13 +25,7 @@ class BannerService implements BannerInterface
 
     public function getAllBanners()
     {
-        $requestData = [];
-        $pageSize = request()->query("length", 10);
-        $pageNum = request()->query("start", 0) / $pageSize;
-        $requestData = [
-            'page' => $pageNum,
-            'limit' => $pageSize,
-        ];
+        $requestData = $this->getFilterData();
 
         $data = $this->sendGetRequest($this->url . "/banners", $requestData, __METHOD__);
 
@@ -39,7 +33,7 @@ class BannerService implements BannerInterface
             $data = [
                 "content" => [],
                 "page" => [
-                    "size" => $pageSize,
+                    "size" => $requestData['size'],
                     "totalElements" => 0,
                     "totalPages" => 0,
                     "number" => 0
@@ -107,5 +101,39 @@ class BannerService implements BannerInterface
         $data = $jsonToArray['data'] ?? [];
 
         return $data;
+    }
+
+    protected function getFilterData()
+    {
+        $filterData = [
+            'filters' => [],
+            'sorts' => [],
+            'page' => 0,
+            'size' => 10,
+        ];
+        $request = request();
+
+        $filterData['size'] = $request->query("length", 10);
+
+        $filterData['page'] = $request->query("start", 0) / $filterData['size'];
+
+        $sort = $request->query("order");
+
+        return $filterData;
+    }
+
+    protected function convertDatatableColumnToField($column)
+    {
+        switch ($column) {
+            case "0":
+                return "bannerId";
+        }
+    }
+
+    protected function fieldList() {
+        return [
+            0 => "bannerId",
+            1 => "title",
+        ];
     }
 }

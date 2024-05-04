@@ -21,11 +21,7 @@ trait RequestToCoreTrait
     {
         $this->logRequestBeforeSend($url, $data, $method);
 
-        // $response = Cache::remember($url, 180, function () use ($url, $data) {
-        //     return 
-        // });
-
-        $response = Http::get($url, $data);
+        $response = Http::withBody(json_encode($data), 'application/json')->get($url);
 
         $this->logResponseAfterReceive($response, $method);
 

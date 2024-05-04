@@ -40,8 +40,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
     <style>
         /* div.dataTables_wrapper div.dataTables_paginate {
-                                                                display: none;
-                                                            } */
+                                                                        display: none;
+                                                                    } */
 
         .zoom {
             transition: transform .2s;
@@ -70,7 +70,7 @@
                     processing: true,
                     serverSide: true,
                     paginate: true,
-                    pageLength: 2,
+                    pageLength: 10,
                     bInfo: true,
                     searching: true,
                     bSort: true,
@@ -82,6 +82,27 @@
                         {
                             "searchable": true,
                             "targets": [0, 1, 2]
+                        }
+                    ],
+                    columns: [{
+                            name: 'bannerId',
+                            target: 0,
+                        },
+                        {
+                            name: 'title',
+                            target: 1
+                        },
+                        {
+                            name: 'slug',
+                            target: 2
+                        },
+                        {
+                            name: 'photo',
+                            target: 3
+                        },
+                        {
+                            name: 'status',
+                            target: 4
                         }
                     ]
                 });
