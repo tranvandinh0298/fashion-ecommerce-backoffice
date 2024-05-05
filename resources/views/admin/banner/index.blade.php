@@ -29,6 +29,16 @@
                     <tbody>
 
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Slug</th>
+                            <th>Photo</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -40,8 +50,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
     <style>
         /* div.dataTables_wrapper div.dataTables_paginate {
-                                                                        display: none;
-                                                                    } */
+                                                                                                                                    display: none;
+                                                                                                                                } */
 
         .zoom {
             transition: transform .2s;
@@ -75,36 +85,89 @@
                     searching: true,
                     bSort: true,
                     bLengthChange: true,
-                    "columnDefs": [{
-                            "orderable": false,
-                            "targets": [3, 4, 5]
-                        },
-                        {
-                            "searchable": true,
-                            "targets": [0, 1, 2]
-                        }
-                    ],
+                    columnDefs: [{
+                        targets: '_all',
+                        orderable: false,
+                        searchable: false
+                    }, {
+                        targets: [0, 1, 2, 3],
+                        orderable: true,
+                        searchable: true,
+                    }],
                     columns: [{
                             name: 'bannerId',
                             target: 0,
+                            data: 'bannerId',
+                            orderable: true,
+                            searchable: true
                         },
                         {
                             name: 'title',
-                            target: 1
+                            target: 1,
+                            data: 'title',
+                            orderable: true,
+                            searchable: true
                         },
                         {
                             name: 'slug',
-                            target: 2
+                            target: 2,
+                            data: 'slug',
+                            orderable: true,
+                            searchable: true
                         },
                         {
                             name: 'photo',
-                            target: 3
+                            target: 3,
+                            data: 'photo',
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             name: 'status',
-                            target: 4
+                            target: 4,
+                            data: 'status',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            name: 'action',
+                            target: 5,
+                            data: 'action',
+                            orderable: false,
+                            searchable: false
                         }
-                    ]
+                    ],
+                    initComplete: function() {
+                        // var table = this;
+                    //     $(this.api().table().container()).on('click', 'input[type="search"]',
+                    // function() {
+                    //         table.order(
+                    //     []); // Disable sorting when clicking into the search box
+                    //     });
+
+                        // // Add individual column search fields
+                        // $('#banner-dataTable thead th').each(function(index) {
+                        //     if ($.inArray(index, [0, 1, 2, 3]) !== -1) {
+                        //         var title = $(this).text();
+                        //         if (title !== '') {
+                        //             $(this).html(
+                        //                 '<input type="text" class="form-control" placeholder="' +
+                        //                 title +
+                        //                 '" />');
+                        //         }
+                        //     }
+                        // });
+
+                        // // Apply individual column searching
+                        // $('#banner-dataTable thead input').on('keyup change', function(index) {
+                        //     if ($.inArray(index, [0, 1, 2, 3]) !== -1) {
+                        //         var index = $(this).parent().index();
+                        //         $('#banner-dataTable').DataTable().column(index).search(this
+                        //                 .value)
+                        //             .draw();
+                        //     }
+                        // });
+                    },
                 });
             }
         })

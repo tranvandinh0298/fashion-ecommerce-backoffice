@@ -42,16 +42,15 @@ class BannerService implements BannerInterface
         }
 
         $content = $data['content'];
-
         if (!empty($content)) {
             $data['content'] = collect($content)->map(function ($banner) {
                 return [
-                    0 => $banner['bannerId'],
-                    1 => $banner['title'],
-                    2 => $banner['slug'],
-                    3 => $this->displayPhoto($banner['photo']),
-                    4 => $this->displayStatus($banner['status']),
-                    5 => $this->displayAction($banner['bannerId'])
+                    'bannerId' => $banner['bannerId'],
+                    'title' => $banner['title'],
+                    'slug' => $banner['slug'],
+                    'photo' => $this->displayPhoto($banner['photo']),
+                    'status' => $this->displayStatus($banner['status']),
+                    'action' => $this->displayAction($banner['bannerId'])
                 ];
             });
         }
@@ -105,7 +104,7 @@ class BannerService implements BannerInterface
 
     protected function getFilterData()
     {
-        $filterData = [
+        $searchData = [
             'filters' => [],
             'sorts' => [],
             'page' => 0,
@@ -113,27 +112,36 @@ class BannerService implements BannerInterface
         ];
         $request = request();
 
-        $filterData['size'] = $request->query("length", 10);
+        $searchData['size'] = $request->query("length", 10);
 
-        $filterData['page'] = $request->query("start", 0) / $filterData['size'];
+        $searchData['page'] = $request->query("start", 0) / $searchData['size'];
 
-        $sort = $request->query("order");
+        // $filters = $request->query("")
 
-        return $filterData;
+        $sorts = $request->query("order");
+        foreach ($sorts as $sort) {
+            $searchData['sorts'][] = [
+                'key' => $this->convertDatatableColumnToField($sort['column']),
+                'direction' => strtoupper($sort['dir'])
+            ];
+        }
+
+        return $searchData;
     }
 
     protected function convertDatatableColumnToField($column)
     {
-        switch ($column) {
-            case "0":
-                return "bannerId";
-        }
+        return $this->fieldList()[$column];
     }
 
     protected function fieldList() {
         return [
             0 => "bannerId",
             1 => "title",
+            2 => "slug",
+            3 => 'photo',
+            4 => 'status',
+            5 => 'action',
         ];
     }
 }
