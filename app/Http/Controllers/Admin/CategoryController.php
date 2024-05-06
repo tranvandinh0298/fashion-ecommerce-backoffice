@@ -4,11 +4,21 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Services\CategoryService;
+use App\Traits\LogTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
+    use LogTrait;
+    protected $categoryService;
+
+    public function __construct()
+    {
+        $this->categoryService = new CategoryService();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,10 +26,37 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::getAllCategory();
+        // $categories = Category::getAllCategory();
         return response()->view("admin.category.index", [
-            'categories' => $categories
+            // 'categories' => $categories
         ]);
+    }
+
+    public function getCategories()
+    {
+        $this->logInfo(request()->all());
+
+        $data = $this->categoryService->getAllCategories();
+
+        $banners = collect($data['content']);
+
+        $page = $data['page'];
+
+        $this->logInfo([
+            'draw' => request()->get("draw"),
+            'recordsTotal' => $page['totalElements'],
+            'recordsFiltered' => $page['totalElements'],
+            'data' => $banners
+        ]);
+
+        return response()->json(
+            [
+                'draw' => request()->get("draw"),
+                'recordsTotal' => $page['totalElements'],
+                'recordsFiltered' => $page['totalElements'],
+                'data' => $banners
+            ]
+        );
     }
 
     /**

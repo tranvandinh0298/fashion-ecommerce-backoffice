@@ -24,7 +24,7 @@ trait DisplayHtmlTrait
 
     public function displayPhoto($photo = "assets/admin/img/thumbnail-default.jpg")
     {
-        return '<img src="' . $photo . '" class="img-fluid zoom" style="max-width:80px"
+        return '<img src="' . url($photo) . '" class="img-fluid zoom" style="max-width:80px"
                                                 alt="' . $photo . '">';
     }
 
@@ -43,7 +43,7 @@ trait DisplayHtmlTrait
         return '<form method="POST" action="' . route('banners.destroy', [$id]) . '">'
             . $csrfField
             . $methodField
-            . '<button class="btn btn-danger btn-sm dltBtn" data-id="' . $id . '"
+            . '<button type="button" class="btn btn-danger btn-sm dltBtn" data-id="' . $id . '"
             style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip"
             data-placement="bottom" title="Delete"><i
                 class="fas fa-trash-alt"></i></button>

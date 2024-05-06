@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Banner\StoreBannerRequest;
+use App\Http\Requests\Banner\UpdateBannerRequest;
 use App\Traits\LogTrait;
 use Illuminate\Http\Request;
 use App\Models\Banner;
@@ -27,14 +29,7 @@ class BannerController extends Controller
      */
     public function index()
     {
-        // $data = $this->bannerService->getAllBanners();
-        // $banners = collect($data['content']);
-
-        // $page = $data['page'];
-        return response()->view('admin.banner.index', [
-            // 'banners' => $banners,
-            // 'page' => $page
-        ]);
+        return response()->view('admin.banner.index');
     }
 
     public function getBanners()
@@ -80,24 +75,12 @@ class BannerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreBannerRequest $request)
     {
-        // return $request->all();
-        $this->validate($request, [
-            'title' => 'string|required|max:50',
-            'description' => 'string|nullable',
-            'photo' => 'string|required',
-            'status' => 'required|in:active,inactive',
-        ]);
         $data = $request->all();
-        $slug = Str::slug($request->title);
-        $count = Banner::where('slug', $slug)->count();
-        if ($count > 0) {
-            $slug = $slug . '-' . date('ymdis') . '-' . rand(0, 999);
-        }
-        $data['slug'] = $slug;
-        // return $slug;
+
         $status = $this->bannerService->createBanner($data);
+
         if ($status) {
             request()->session()->flash('success', 'Banner has been added successfully');
         } else {
@@ -125,7 +108,8 @@ class BannerController extends Controller
      */
     public function edit($id)
     {
-        $banner = Banner::findOrFail($id);
+        $banner = $this->bannerService->getBannerById($id);
+
         return response()->view('admin.banner.edit', [
             'banner' => $banner
         ]);
@@ -138,24 +122,12 @@ class BannerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBannerRequest $request, int $id)
     {
-        $banner = Banner::findOrFail($id);
-        $this->validate($request, [
-            'title' => 'string|required|max:50',
-            'description' => 'string|nullable',
-            'photo' => 'string|required',
-            'status' => 'required|in:active,inactive',
-        ]);
         $data = $request->all();
-        // $slug=Str::slug($request->title);
-        // $count=Banner::where('slug',$slug)->count();
-        // if($count>0){
-        //     $slug=$slug.'-'.date('ymdis').'-'.rand(0,999);
-        // }
-        // $data['slug']=$slug;
-        // return $slug;
-        $status = $banner->fill($data)->save();
+
+        $status = $this->bannerService->updateBanner($id, $data);
+
         if ($status) {
             request()->session()->flash('success', 'Banner has been updated successfully');
         } else {
@@ -172,8 +144,8 @@ class BannerController extends Controller
      */
     public function destroy($id)
     {
-        $banner = Banner::findOrFail($id);
-        $status = $banner->delete();
+        $status = $this->bannerService->softDeleteBanner($id);
+
         if ($status) {
             request()->session()->flash('success', 'Banner has been deleted successfully.');
         } else {

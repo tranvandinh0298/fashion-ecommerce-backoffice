@@ -14,6 +14,41 @@
                 data-placement="bottom" title="Add User"><i class="fas fa-plus"></i> Add Banner</a>
         </div>
         <div class="card-body">
+            <div class="search">
+                <form action="#" id="search-form">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="bannerId">ID</label>
+                                <input type="text" class="form-control" name="bannerId" id="bannerId" value=""
+                                    placeholder="Enter ID" data-toggle="search-box" data-column="bannerId"
+                                    data-operator="equal" data-fieldtype="integer">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" name="title" id="title" value=""
+                                    placeholder="Enter title" data-toggle="search-box" data-column="title"
+                                    data-operator="like" data-fieldtype="integer">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="slug">Slug</label>
+                                <input type="text" class="form-control" name="slug" id="slug" value=""
+                                    placeholder="Enter slug" data-toggle="search-box" data-column="slug"
+                                    data-operator="like" data-fieldtype="integer">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="status">Status</label>
+                                <select name="status" class="form-control" id="status" data-toggle="search-box"
+                                    data-column="status" data-operator="equal" data-fieldtype="integer">
+                                    <option value="">all</option>
+                                    <option value="active">active</option>
+                                    <option value="inactive">inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover" id="banner-dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -49,9 +84,9 @@
     <link href="{{ asset('assets/admin/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
     <style>
-        /* div.dataTables_wrapper div.dataTables_paginate {
-                                                                                                                                    display: none;
-                                                                                                                                } */
+        .dataTables_filter {
+            display: none;
+        }
 
         .zoom {
             transition: transform .2s;
@@ -76,15 +111,7 @@
         $(document).ready(function() {
             const dataTable = document.getElementById("banner-dataTable");
             if (!!dataTable) {
-                DATATABLE.init("#banner-dataTable", '/admin/banners/ajax-get-banners', {
-                    processing: true,
-                    serverSide: true,
-                    paginate: true,
-                    pageLength: 10,
-                    bInfo: true,
-                    searching: true,
-                    bSort: true,
-                    bLengthChange: true,
+                let table = DATATABLE.init("#banner-dataTable", '/admin/banners/ajax-get-banners', {
                     columnDefs: [{
                         targets: '_all',
                         orderable: false,
@@ -136,69 +163,9 @@
                             orderable: false,
                             searchable: false
                         }
-                    ],
-                    initComplete: function() {
-                        // var table = this;
-                    //     $(this.api().table().container()).on('click', 'input[type="search"]',
-                    // function() {
-                    //         table.order(
-                    //     []); // Disable sorting when clicking into the search box
-                    //     });
-
-                        // // Add individual column search fields
-                        // $('#banner-dataTable thead th').each(function(index) {
-                        //     if ($.inArray(index, [0, 1, 2, 3]) !== -1) {
-                        //         var title = $(this).text();
-                        //         if (title !== '') {
-                        //             $(this).html(
-                        //                 '<input type="text" class="form-control" placeholder="' +
-                        //                 title +
-                        //                 '" />');
-                        //         }
-                        //     }
-                        // });
-
-                        // // Apply individual column searching
-                        // $('#banner-dataTable thead input').on('keyup change', function(index) {
-                        //     if ($.inArray(index, [0, 1, 2, 3]) !== -1) {
-                        //         var index = $(this).parent().index();
-                        //         $('#banner-dataTable').DataTable().column(index).search(this
-                        //                 .value)
-                        //             .draw();
-                        //     }
-                        // });
-                    },
+                    ]
                 });
             }
         })
-    </script>
-    <script>
-        $(document).ready(function() {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $('.dltBtn').click(function(e) {
-                var form = $(this).closest('form');
-                var dataID = $(this).data('id');
-                // alert(dataID);
-                e.preventDefault();
-                swal({
-                        title: "Are you sure?",
-                        text: "Once deleted, you will not be able to recover this data!",
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                    })
-                    .then((willDelete) => {
-                        if (willDelete) {
-                            form.submit();
-                        } else {
-                            swal("Your data is safe!");
-                        }
-                    });
-            });
-        });
     </script>
 @endpush

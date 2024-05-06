@@ -3,15 +3,19 @@
 namespace App\Services;
 
 use App\Exceptions\RestException;
+use App\Services\Interfaces\CategoryInterface;
+use App\Traits\DisplayHtmlTrait;
 use App\Traits\LogTrait;
+use App\Traits\RequestToCoreTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
-class CategoryService
+class CategoryService implements CategoryInterface
 {
-    use LogTrait;
+    use RequestToCoreTrait;
+    use DisplayHtmlTrait;
 
     protected $url;
 
@@ -20,75 +24,92 @@ class CategoryService
         $this->url = config("rest.core.url");
     }
 
-    public function getAllCategories(Request $request)
+    public function getAllCategories()
     {
-        $pageNum = $request->query("page", 1) - 1;
-        $pageSize = $request->query("pageSize", 10);
+        $requestData = $this->getFilterData();
 
-        $this->logInfo(__METHOD__ . ' - REQUEST: ' . json_encode([
-            'url' => $this->url . "/categories",
-            'request' => $request->all()
-        ], 256));
+        $data = $this->sendGetRequest($this->url . "/categories", $requestData, __METHOD__);
 
-        $response = Http::get($this->url . "/categories", ['page' => $pageNum, 'limit' => $pageSize]);
-
-        $this->logInfo(__METHOD__ . ' - RESPONSE: ' . json_encode($response->json(), 256));
-
-        // extract data from response
-        $data = $this->extractData($response);
-
-        // return data
-        return $data;
-    }
-
-    public function deleteImage($imageId)
-    {
-        $this->logInfo(__METHOD__ . ' - REQUEST: ' . json_encode(array_merge([
-            'url' => $this->url . "/images",
-        ], []), 256));
-
-        $response = Http::delete($this->url . '/images/' . $imageId);
-
-        $this->logInfo(__METHOD__ . ' - RESPONSE: ' . json_encode($response->json(), 256));
-
-        // extract data from response
-        $data = $this->extractData($response);
-
-        // return data
-        return $data;
-    }
-
-    /**
-     * trích xuất dữ liệu
-     * 
-     * @author dinhtv
-     * @param \Illuminate\Http\Client\Response
-     * @throws \Exception
-     * @return array|null
-     * @since 12/10/2023
-     */
-    protected function extractData(Response $response): array
-    {
-        $extractData = [];
-        $jsonToArray = $response->json();
-
-        /**
-         * các TH cần throw lỗi ko tìm thấy partner
-         * * request client hoặc server xảy ra lỗi
-         * * responseBody không chứa tham số returnCode
-         * * responseBody chứa tham số returnCode không phải mã thành công
-         */
-        if ($response->failed() || empty($jsonToArray['resultCode']) || $jsonToArray['resultCode'] != CORE_SUCCESS_CODE) {
-            throw new RestException("Lỗi kết nối");
+        if (empty($data)) {
+            $data = [
+                "content" => [],
+                "page" => [
+                    "size" => $requestData['size'],
+                    "totalElements" => 0,
+                    "totalPages" => 0,
+                    "number" => 0
+                ],
+            ];
         }
 
-        // extractData
-        if (empty($jsonToArray['data'])) {
-            throw new RestException("Lỗi không có dữ liệu trả về");
-        } else {
-            $data = $jsonToArray['data'];
+        $content = $data['content'];
+        if (!empty($content)) {
+            $data['content'] = collect($content)->map(function ($banner) {
+                return [
+                    'bannerId' => $banner['bannerId'],
+                    'title' => $banner['title'],
+                    'slug' => $banner['slug'],
+                    'photo' => $this->displayPhoto($banner['photo']),
+                    'status' => $this->displayStatus($banner['status']),
+                    'action' => $this->displayAction($banner['bannerId'])
+                ];
+            });
         }
 
         return $data;
+    }
+
+    public function getCategoryById($bannerId)
+    {
+        $requestData = [];
+
+        $data = $this->sendGetRequest($this->url . "/categories/".$bannerId, $requestData, __METHOD__);
+
+        if (!empty($data)) {
+            $data['photo'] = url($data['photo']);
+        }
+
+        return $data;
+    }
+
+    public function createCategory(array $data)
+    {
+        $requestData = [
+            'title' => $data['title'],
+            'slug' => $data['slug'],
+            'description' => $data['description'],
+            'photo' => parse_url($data['photo'])['path'],
+            'status' => $data['status'],
+        ];
+
+        $data = $this->sendPostRequest($this->url . "/categories", $requestData, __METHOD__);
+
+        return $data;
+    }
+
+    public function updateCategory(int $bannerId, array $data)
+    {
+        $requestData = [
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'photo' => parse_url($data['photo'])['path'],
+            'status' => $data['status'],
+        ];
+
+        $data = $this->sendPatchRequest($this->url . "/categories/".$bannerId, $requestData, __METHOD__);
+
+        return $data;
+    }
+
+    public function softDeleteCategory(int $bannerId)
+    {
+        $data = $this->sendDeleteRequest($this->url . "/categories/".$bannerId."/soft-delete", __METHOD__);
+
+        return $data;
+    }
+
+    public function deleteCategory(int $id): bool
+    {
+        return true;
     }
 }
