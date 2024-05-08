@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Banner;
+namespace App\Http\Requests\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
-class StoreBannerRequest extends FormRequest
+class StoreCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,11 +25,13 @@ class StoreBannerRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'string|required|max:50',
-            'slug' => 'string|required|max:50',
-            'description' => 'string|nullable',
-            'photo' => 'string|required',
-            'status' => 'required|in:active,inactive'
+            'title' => 'string|required',
+            'slug' => 'string|required',
+            'summary' => 'string|nullable',
+            'photo' => 'string|nullable',
+            'status' => 'required|in:active,inactive',
+            'isParent' => 'sometimes|in:1',
+            'parentCategoryId' => 'nullable|exists:categories,id',
         ];
     }
 
@@ -46,7 +48,7 @@ class StoreBannerRequest extends FormRequest
 
         $this->merge([
             'slug' => $slug,
-            'photo' => $photo,
+            'photo' => $photo
         ]);
     }
 }

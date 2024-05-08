@@ -55,12 +55,32 @@ Route::prefix("admin")->middleware(['auth', 'isAdmin'])->group(function () {
         Route::delete("/{id}", [BannerController::class, 'destroy'])->name("banners.destroy");
     });
     // Brand
-    Route::resource('brand', BrandController::class);
+    // Route::resource('brand', BrandController::class);
+    Route::prefix("brands")->group(function () {
+        Route::get("/", [BrandController::class, 'index'])->name("brands.index");
+        Route::get("/ajax-get-brands", [BrandController::class, 'getBrands'])->name("brands.get");
+        Route::get("/create", [BrandController::class, 'create'])->name("brands.create");
+        Route::post("/", [BrandController::class, 'store'])->name("brands.store");
+        Route::get("/{id}", [BrandController::class, 'show'])->name("brands.show");
+        Route::get("/{id}/edit", [BrandController::class, 'edit'])->name("brands.edit");
+        Route::patch("/{id}", [BrandController::class, 'update'])->name("brands.update");
+        Route::delete("/{id}", [BrandController::class, 'destroy'])->name("brands.destroy");
+    });
     // Profile
     Route::get('/profile', [DashboardController::class, 'profile'])->name('admin-profile');
     Route::post('/profile/{id}', [DashboardController::class, 'profileUpdate'])->name('profile-update');
     // Category
-    Route::resource('/category', CategoryController::class);
+    // Route::resource('/category', CategoryController::class);
+    Route::prefix("categories")->group(function () {
+        Route::get("/", [CategoryController::class, 'index'])->name("categories.index");
+        Route::get("/ajax-get-categories", [CategoryController::class, 'getCategories'])->name("categories.get");
+        Route::get("/create", [CategoryController::class, 'create'])->name("categories.create");
+        Route::post("/", [CategoryController::class, 'store'])->name("categories.store");
+        Route::get("/{id}", [CategoryController::class, 'show'])->name("categories.show");
+        Route::get("/{id}/edit", [CategoryController::class, 'edit'])->name("categories.edit");
+        Route::patch("/{id}", [CategoryController::class, 'update'])->name("categories.update");
+        Route::delete("/{id}", [CategoryController::class, 'destroy'])->name("categories.destroy");
+    });
     // Product
     Route::resource('/product', ProductController::class);
     // Ajax for sub category

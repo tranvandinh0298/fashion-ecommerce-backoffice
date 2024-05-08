@@ -6,7 +6,7 @@
     <div class="card">
         <h5 class="card-header">Add Category</h5>
         <div class="card-body">
-            <form method="post" action="{{ route('category.store') }}">
+            <form method="post" action="{{ route('categories.store') }}">
                 {{ csrf_field() }}
                 <div class="form-group">
                     <label for="inputTitle" class="col-form-label">Title <span class="text-danger">*</span></label>
@@ -26,18 +26,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="is_parent">Is Parent</label><br>
-                    <input type="checkbox" name='is_parent' id='is_parent' value='1' checked> Yes
+                    <label for="isParent">Is Parent</label><br>
+                    <input type="checkbox" name='isParent' id='isParent' value='1' checked> Yes
                 </div>
 
                 <div class="form-group d-none" id='parent_cat_div'>
-                    <label for="parent_id">Parent Category</label>
-                    <select name="parent_id" class="form-control">
+                    <label for="parentCategoryId">Parent Category</label>
+                    <select name="parentCategoryId" class="form-control">
                         <option value="">--Select any category--</option>
-                        @foreach ($parent_cats as $key => $parent_cat)
-                            <option value='{{ $parent_cat->id }}'>{{ $parent_cat->title }}</option>
+                        @foreach ($parentCategories as $category)
+                            <option value='{{ $category['categoryId'] }}'>{{ $category['title'] }}</option>
                         @endforeach
                     </select>
+                    @error('parentCategoryId')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="form-group">
@@ -52,7 +55,6 @@
                             value="{{ old('photo') }}">
                     </div>
                     <div id="holder" style="margin-top:15px;max-height:100px;"></div>
-
                     @error('photo')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -96,8 +98,8 @@
     </script>
 
     <script>
-        $('#is_parent').change(function() {
-            var is_checked = $('#is_parent').prop('checked');
+        $('#isParent').change(function() {
+            var is_checked = $('#isParent').prop('checked');
             if (is_checked) {
                 $('#parent_cat_div').addClass('d-none');
                 $('#parent_cat_div').val('');

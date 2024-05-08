@@ -3,12 +3,24 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Brand\StoreBrandRequest;
+use App\Http\Requests\Brand\UpdateBrandRequest;
 use Illuminate\Http\Request;
 use App\Models\Brand;
+use App\Services\BrandService;
+use App\Traits\LogTrait;
 use Illuminate\Support\Str;
 
 class BrandController extends Controller
 {
+    use LogTrait;
+    protected $brandService;
+
+    public function __construct()
+    {
+        $this->brandService = new BrandService();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,10 +28,34 @@ class BrandController extends Controller
      */
     public function index()
     {
-        $brand = Brand::orderBy('id', 'DESC')->paginate();
-        return response()->view('admin.brand.index', [
-            'brands' => $brand
+        return response()->view('admin.brand.index', []);
+    }
+
+    public function getBrands()
+    {
+        $this->logInfo(request()->all());
+
+        $data = $this->brandService->getAllBrands();
+
+        $banners = collect($data['content']);
+
+        $page = $data['page'];
+
+        $this->logInfo([
+            'draw' => request()->get("draw"),
+            'recordsTotal' => $page['totalElements'],
+            'recordsFiltered' => $page['totalElements'],
+            'data' => $banners
         ]);
+
+        return response()->json(
+            [
+                'draw' => request()->get("draw"),
+                'recordsTotal' => $page['totalElements'],
+                'recordsFiltered' => $page['totalElements'],
+                'data' => $banners
+            ]
+        );
     }
 
     /**
@@ -38,26 +74,18 @@ class BrandController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreBrandRequest $request)
     {
-        $this->validate($request, [
-            'title' => 'string|required',
-        ]);
         $data = $request->all();
-        $slug = Str::slug($request->title);
-        $count = Brand::where('slug', $slug)->count();
-        if ($count > 0) {
-            $slug = $slug . '-' . date('ymdis') . '-' . rand(0, 999);
-        }
-        $data['slug'] = $slug;
-        // return $data;
-        $status = Brand::create($data);
+
+        $status = $this->brandService->createBrand($data);
+
         if ($status) {
             request()->session()->flash('success', 'Brand created successfully');
         } else {
             request()->session()->flash('error', 'Error, Please try again');
         }
-        return redirect()->route('brand.index');
+        return redirect()->route('brands.index');
     }
 
     /**
@@ -79,10 +107,8 @@ class BrandController extends Controller
      */
     public function edit($id)
     {
-        $brand = Brand::find($id);
-        if (!$brand) {
-            request()->session()->flash('error', 'Brand not found');
-        }
+        $brand = $this->brandService->getBrandById($id);
+
         return response()->view('admin.brand.edit', [
             'brand' => $brand
         ]);
@@ -96,21 +122,17 @@ class BrandController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBrandRequest $request, $id)
     {
-        $brand = Brand::find($id);
-        $this->validate($request, [
-            'title' => 'string|required',
-        ]);
         $data = $request->all();
 
-        $status = $brand->fill($data)->save();
+        $status = $this->brandService->updateBrand($id, $data);
         if ($status) {
             request()->session()->flash('success', 'Brand updated successfully');
         } else {
             request()->session()->flash('error', 'Error, Please try again');
         }
-        return redirect()->route('brand.index');
+        return redirect()->route('brands.index');
     }
 
     /**
@@ -121,18 +143,13 @@ class BrandController extends Controller
      */
     public function destroy($id)
     {
-        $brand = Brand::find($id);
-        if ($brand) {
-            $status = $brand->delete();
-            if ($status) {
-                request()->session()->flash('success', 'Brand deleted successfully');
-            } else {
-                request()->session()->flash('error', 'Error, Please try again');
-            }
-            return redirect()->route('brand.index');
+        $status = $this->brandService->softDeleteBrand($id);
+
+        if ($status) {
+            request()->session()->flash('success', 'Brand has been deleted successfully.');
         } else {
-            request()->session()->flash('error', 'Brand not found');
-            return redirect()->back();
+            request()->session()->flash('error', 'Error occurred while deleting banner');
         }
+        return redirect()->route('banners.index');
     }
 }

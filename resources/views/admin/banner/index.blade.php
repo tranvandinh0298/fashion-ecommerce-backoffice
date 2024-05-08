@@ -39,7 +39,7 @@
                             <div class="col-md-3">
                                 <label for="status">Status</label>
                                 <select name="status" class="form-control" id="status" data-toggle="search-box"
-                                    data-column="status" data-operator="equal" data-fieldtype="integer">
+                                    data-column="status" data-operator="equal" data-fieldtype="string">
                                     <option value="">all</option>
                                     <option value="active">active</option>
                                     <option value="inactive">inactive</option>
@@ -61,19 +61,6 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>#</th>
-                            <th>Title</th>
-                            <th>Slug</th>
-                            <th>Photo</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>

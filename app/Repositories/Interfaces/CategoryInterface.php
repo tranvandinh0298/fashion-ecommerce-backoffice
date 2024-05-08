@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services\Interfaces;
+namespace App\Repositories\Interfaces;
 
 interface CategoryInterface
 {
-    public function getAllCategories();
+    public function getAllCategories(array $filters);
     public function getCategoryById($id);
     public function createCategory(array $data);
     public function updateCategory(int $id, array $data);

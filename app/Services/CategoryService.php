@@ -3,32 +3,33 @@
 namespace App\Services;
 
 use App\Exceptions\RestException;
-use App\Services\Interfaces\CategoryInterface;
+use App\Repositories\CategoryRepository;
 use App\Traits\DisplayHtmlTrait;
 use App\Traits\LogTrait;
+use App\Traits\ProcessingDataTrait;
 use App\Traits\RequestToCoreTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
-class CategoryService implements CategoryInterface
+class CategoryService
 {
-    use RequestToCoreTrait;
+    use ProcessingDataTrait;
     use DisplayHtmlTrait;
 
-    protected $url;
+    protected $categoryRepository;
 
     public function __construct()
     {
-        $this->url = config("rest.core.url");
+        $this->categoryRepository = new CategoryRepository();
     }
 
     public function getAllCategories()
     {
         $requestData = $this->getFilterData();
 
-        $data = $this->sendGetRequest($this->url . "/categories", $requestData, __METHOD__);
+        $data = $this->categoryRepository->getAllCategories($requestData);
 
         if (empty($data)) {
             $data = [
@@ -43,27 +44,32 @@ class CategoryService implements CategoryInterface
         }
 
         $content = $data['content'];
-        if (!empty($content)) {
-            $data['content'] = collect($content)->map(function ($banner) {
-                return [
-                    'bannerId' => $banner['bannerId'],
-                    'title' => $banner['title'],
-                    'slug' => $banner['slug'],
-                    'photo' => $this->displayPhoto($banner['photo']),
-                    'status' => $this->displayStatus($banner['status']),
-                    'action' => $this->displayAction($banner['bannerId'])
-                ];
-            });
-        }
+        $data['content'] = $this->convertListOfCategoriesToHTML($content);
 
         return $data;
     }
 
-    public function getCategoryById($bannerId)
+    public function getAllCategoriesWithoutPagination($requestData)
     {
-        $requestData = [];
+        $data = $this->categoryRepository->getAllCategoriesWithoutPagination($requestData);
 
-        $data = $this->sendGetRequest($this->url . "/categories/".$bannerId, $requestData, __METHOD__);
+        if (empty($data)) {
+            $data = [
+                "content" => [],
+            ];
+        }
+
+        $content = $data['content'];
+        $data['content'] = $this->convertListOfCategoryDTOs($content);
+
+        return $data['content'];
+    }
+
+    public function getCategoryById($categoryId)
+    {
+        $data = $this->categoryRepository->getCategoryById($categoryId);
+
+        $data = $this->convertCategoryDTOtoCategory($data);
 
         if (!empty($data)) {
             $data['photo'] = url($data['photo']);
@@ -74,36 +80,40 @@ class CategoryService implements CategoryInterface
 
     public function createCategory(array $data)
     {
-        $requestData = [
+        $insertData = [
             'title' => $data['title'],
             'slug' => $data['slug'],
-            'description' => $data['description'],
-            'photo' => parse_url($data['photo'])['path'],
+            'summary' => $data['summary'],
+            'photo' => $data['photo'],
             'status' => $data['status'],
+            'isParent' => $data['isParent'] ?? 0,
+            'parentCategoryId' => $data['parentCategoryId'] ?? null,
         ];
 
-        $data = $this->sendPostRequest($this->url . "/categories", $requestData, __METHOD__);
+        $data = $this->categoryRepository->createCategory($insertData);
 
         return $data;
     }
 
-    public function updateCategory(int $bannerId, array $data)
+    public function updateCategory(int $categoryId, array $data)
     {
-        $requestData = [
+        $updateData = [
             'title' => $data['title'],
-            'description' => $data['description'],
-            'photo' => parse_url($data['photo'])['path'],
+            'summary' => $data['summary'],
+            'photo' => $data['photo'],
             'status' => $data['status'],
+            'isParent' => $data['isParent'] ?? 0,
+            'parentCategoryId' => $data['parentCategoryId'] ?? null,
         ];
 
-        $data = $this->sendPatchRequest($this->url . "/categories/".$bannerId, $requestData, __METHOD__);
+        $data = $this->categoryRepository->updateCategory($categoryId, $updateData);
 
         return $data;
     }
 
-    public function softDeleteCategory(int $bannerId)
+    public function softDeleteCategory(int $categoryId)
     {
-        $data = $this->sendDeleteRequest($this->url . "/categories/".$bannerId."/soft-delete", __METHOD__);
+        $data = $this->categoryRepository->softDeleteCategory($categoryId);
 
         return $data;
     }
@@ -111,5 +121,48 @@ class CategoryService implements CategoryInterface
     public function deleteCategory(int $id): bool
     {
         return true;
+    }
+
+    protected function convertListOfCategoryDTOs($content)
+    {
+        if (!empty($content)) {
+            $data = collect($content)->map(function ($category) {
+                return $this->convertCategoryDTOtoCategory($category);
+            });
+            return $data;
+        }
+    }
+
+    protected function convertCategoryDTOtoCategory($categoryDTO)
+    {
+        return [
+            'categoryId' => $categoryDTO['categoryId'],
+            'title' => $categoryDTO['title'],
+            'slug' => $categoryDTO['slug'],
+            'summary' => $categoryDTO['summary'],
+            'isParent' => $categoryDTO['isParent'],
+            'parentCategory' => $categoryDTO['parentCategoryDTO'] ?? null,
+            'photo' => $categoryDTO['photo'],
+            'status' => $categoryDTO['status'],
+            'action' => $categoryDTO['categoryId'],
+        ];
+    }
+
+    protected function convertListOfCategoriesToHTML($categories) {
+        if (!empty($categories)) {
+            $data = collect($categories)->map(function ($category) {
+                return $this->convertCategoryToHTML($this->convertCategoryDTOtoCategory($category));
+            });
+            return $data;
+        }
+    }
+
+    protected function convertCategoryToHTML($category) {
+        $category['isParent'] = $this->displayYesNo($category['isParent']);
+        $category['photo'] = $this->displayPhoto($category['photo']);
+        $category['status'] = $this->displayStatus($category['status']);
+        $category['action'] = $this->displayAction($category['categoryId'], 'categories');
+
+        return $category;
     }
 }

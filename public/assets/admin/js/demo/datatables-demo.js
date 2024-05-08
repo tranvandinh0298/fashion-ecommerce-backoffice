@@ -1,37 +1,3 @@
-$(document).ready(function () {
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    const deleteBtn = $('.dltBtn');
-    console.log(deleteBtn);
-    if ($(deleteBtn).length > 0) {
-        $(deleteBtn).each(function () {
-            $(this).on("click", function () {
-                console.log("click");
-                var form = $(this).closest('form');
-                var dataID = $(this).data('id');
-                e.preventDefault();
-                swal({
-                    title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this data!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                    .then((willDelete) => {
-                        if (willDelete) {
-                            form.submit();
-                        } else {
-                            swal("Your data is safe!");
-                        }
-                    });
-            })
-        });
-    }
-});
-
 // Call the dataTables jQuery plugin
 const DATATABLE = {
     filter: {},

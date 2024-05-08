@@ -4,30 +4,31 @@ namespace App\Services;
 
 use App\Exceptions\RestException;
 use App\Models\Banner;
-use App\Services\Interfaces\BannerInterface;
+use App\Repositories\BannerRepository;
 use App\Traits\DisplayHtmlTrait;
 use App\Traits\LogTrait;
+use App\Traits\ProcessingDataTrait;
 use App\Traits\RequestToCoreTrait;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Log;
 
-class BannerService implements BannerInterface
+class BannerService
 {
-    use RequestToCoreTrait;
+    use ProcessingDataTrait;
     use DisplayHtmlTrait;
 
-    protected $url;
+    protected $bannerRepository;
 
     public function __construct()
     {
-        $this->url = config("rest.core.url");
+        $this->bannerRepository = new BannerRepository();
     }
 
     public function getAllBanners()
     {
         $requestData = $this->getFilterData();
 
-        $data = $this->sendGetRequest($this->url . "/banners", $requestData, __METHOD__);
+        $data = $this->bannerRepository->getAllBanners($requestData);
 
         if (empty($data)) {
             $data = [
@@ -42,27 +43,14 @@ class BannerService implements BannerInterface
         }
 
         $content = $data['content'];
-        if (!empty($content)) {
-            $data['content'] = collect($content)->map(function ($banner) {
-                return [
-                    'bannerId' => $banner['bannerId'],
-                    'title' => $banner['title'],
-                    'slug' => $banner['slug'],
-                    'photo' => $this->displayPhoto($banner['photo']),
-                    'status' => $this->displayStatus($banner['status']),
-                    'action' => $this->displayAction($banner['bannerId'])
-                ];
-            });
-        }
+        $data['content'] = $this->convertListOfBannersToHTML($content);
 
         return $data;
     }
 
     public function getBannerById($bannerId)
     {
-        $requestData = [];
-
-        $data = $this->sendGetRequest($this->url . "/banners/".$bannerId, $requestData, __METHOD__);
+        $data = $this->bannerRepository->getBannerById($bannerId);
 
         if (!empty($data)) {
             $data['photo'] = url($data['photo']);
@@ -73,36 +61,37 @@ class BannerService implements BannerInterface
 
     public function createBanner(array $data)
     {
-        $requestData = [
+        $insertData = [
             'title' => $data['title'],
             'slug' => $data['slug'],
             'description' => $data['description'],
-            'photo' => parse_url($data['photo'])['path'],
+            'photo' => $data['photo'],
             'status' => $data['status'],
         ];
 
-        $data = $this->sendPostRequest($this->url . "/banners", $requestData, __METHOD__);
+        $data = $this->bannerRepository->createBanner($insertData);
 
         return $data;
     }
 
     public function updateBanner(int $bannerId, array $data)
     {
-        $requestData = [
+        $updateData = [
+            'categoryId' => $bannerId,
             'title' => $data['title'],
             'description' => $data['description'],
-            'photo' => parse_url($data['photo'])['path'],
+            'photo' => $data['photo'],
             'status' => $data['status'],
         ];
 
-        $data = $this->sendPatchRequest($this->url . "/banners/".$bannerId, $requestData, __METHOD__);
+        $data = $this->bannerRepository->updateBanner($bannerId, $updateData);
 
         return $data;
     }
 
     public function softDeleteBanner(int $bannerId)
     {
-        $data = $this->sendDeleteRequest($this->url . "/banners/".$bannerId."/soft-delete", __METHOD__);
+        $data = $this->bannerRepository->softDeleteBanner($bannerId);
 
         return $data;
     }
@@ -110,5 +99,44 @@ class BannerService implements BannerInterface
     public function deleteBanner(int $id): bool
     {
         return true;
+    }
+
+    protected function convertListOfBannerDTOs($content)
+    {
+        if (!empty($content)) {
+            $data = collect($content)->map(function ($banner) {
+                return $this->convertBannerDTOtoBanner($banner);
+            });
+            return $data;
+        }
+    }
+
+    protected function convertBannerDTOtoBanner($bannerDTO)
+    {
+        return [
+            'bannerId' => $bannerDTO['bannerId'],
+            'title' => $bannerDTO['title'],
+            'slug' => $bannerDTO['slug'],
+            'photo' => $bannerDTO['photo'],
+            'status' => $bannerDTO['status'],
+            'action' => $bannerDTO['bannerId'],
+        ];
+    }
+
+    protected function convertListOfBannersToHTML($banners) {
+        if (!empty($banners)) {
+            $data = collect($banners)->map(function ($banner) {
+                return $this->convertBannerToHTML($this->convertBannerDTOtoBanner($banner));
+            });
+            return $data;
+        }
+    }
+
+    protected function convertBannerToHTML($banner) {
+        $banner['photo'] = $this->displayPhoto($banner['photo']);
+        $banner['status'] = $this->displayStatus($banner['status']);
+        $banner['action'] = $this->displayAction($banner['bannerId'], 'banners');
+
+        return $banner;
     }
 }

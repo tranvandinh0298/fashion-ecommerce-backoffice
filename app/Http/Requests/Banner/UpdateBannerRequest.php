@@ -30,4 +30,18 @@ class UpdateBannerRequest extends FormRequest
             'status' => 'required|in:active,inactive',
         ];
     }
+
+    /**
+     * Handle request before validation
+     * 
+     * @return void
+     */
+    public function prepareForValidation(): void
+    {
+        $photo = parse_url($this->photo)['path'];
+
+        $this->merge([
+            'photo' => $photo,
+        ]);
+    }
 }
