@@ -31,33 +31,6 @@ class BrandController extends Controller
         return response()->view('admin.brand.index', []);
     }
 
-    public function getBrands()
-    {
-        $this->logInfo(request()->all());
-
-        $data = $this->brandService->getAllBrands();
-
-        $banners = collect($data['content']);
-
-        $page = $data['page'];
-
-        $this->logInfo([
-            'draw' => request()->get("draw"),
-            'recordsTotal' => $page['totalElements'],
-            'recordsFiltered' => $page['totalElements'],
-            'data' => $banners
-        ]);
-
-        return response()->json(
-            [
-                'draw' => request()->get("draw"),
-                'recordsTotal' => $page['totalElements'],
-                'recordsFiltered' => $page['totalElements'],
-                'data' => $banners
-            ]
-        );
-    }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -151,5 +124,32 @@ class BrandController extends Controller
             request()->session()->flash('error', 'Error occurred while deleting banner');
         }
         return redirect()->route('banners.index');
+    }
+
+    public function getBrands()
+    {
+        $this->logInfo(request()->all());
+
+        $data = $this->brandService->getAllBrands();
+
+        $banners = collect($data['content']);
+
+        $page = $data['page'];
+
+        $this->logInfo([
+            'draw' => request()->get("draw"),
+            'recordsTotal' => $page['totalElements'],
+            'recordsFiltered' => $page['totalElements'],
+            'data' => $banners
+        ]);
+
+        return response()->json(
+            [
+                'draw' => request()->get("draw"),
+                'recordsTotal' => $page['totalElements'],
+                'recordsFiltered' => $page['totalElements'],
+                'data' => $banners
+            ]
+        );
     }
 }

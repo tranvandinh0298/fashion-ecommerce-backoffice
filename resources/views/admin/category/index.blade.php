@@ -51,10 +51,13 @@
                                     data-toggle="search-box" data-column="parentCategoryId" data-operator="equal"
                                     data-fieldtype="string">
                                     <option value="">all</option>
-                                    @foreach ($parentCategories as $parentCategory)
-                                        <option value="{{ $parentCategory['categoryId'] }}">{{ $parentCategory['title'] }}
-                                        </option>
-                                    @endforeach
+                                    @if (!empty($parentCategories))
+                                        @foreach ($parentCategories as $parentCategory)
+                                            <option value="{{ $parentCategory['categoryId'] }}">
+                                                {{ $parentCategory['title'] }}
+                                            </option>
+                                        @endforeach
+                                    @endif
                                 </select>
                             </div>
                         </div>

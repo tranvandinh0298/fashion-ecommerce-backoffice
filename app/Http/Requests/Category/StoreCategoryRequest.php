@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Category;
 
+use App\Rules\ExistedParentCategory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
@@ -31,7 +32,7 @@ class StoreCategoryRequest extends FormRequest
             'photo' => 'string|nullable',
             'status' => 'required|in:active,inactive',
             'isParent' => 'sometimes|in:1',
-            'parentCategoryId' => 'nullable|exists:categories,id',
+            'parentCategoryId' => ['nullable', new ExistedParentCategory],
         ];
     }
 

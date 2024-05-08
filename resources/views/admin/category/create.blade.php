@@ -34,9 +34,11 @@
                     <label for="parentCategoryId">Parent Category</label>
                     <select name="parentCategoryId" class="form-control">
                         <option value="">--Select any category--</option>
-                        @foreach ($parentCategories as $category)
-                            <option value='{{ $category['categoryId'] }}'>{{ $category['title'] }}</option>
-                        @endforeach
+                        @if (!empty($parentCategories))
+                            @foreach ($parentCategories as $category)
+                                <option value='{{ $category['categoryId'] }}'>{{ $category['title'] }}</option>
+                            @endforeach
+                        @endif
                     </select>
                     @error('parentCategoryId')
                         <span class="text-danger">{{ $message }}</span>

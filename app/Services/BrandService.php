@@ -52,10 +52,6 @@ class BrandService
     {
         $data = $this->brandRepository->getBrandById($brandId);
 
-        if (!empty($data)) {
-            $data['photo'] = url($data['photo']);
-        }
-
         return $data;
     }
 

@@ -99,7 +99,7 @@
       $(document).ready(function() {
           const dataTable = document.getElementById("dataTable");
           if (!!dataTable) {
-              let table = DATATABLE.init("#dataTable", '/admin/banners/ajax-get-banners', {
+              let table = DATATABLE.init("#dataTable", '/admin/brands/ajax-get-brands', {
                   columnDefs: [{
                       targets: '_all',
                       orderable: false,
