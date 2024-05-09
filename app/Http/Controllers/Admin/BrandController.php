@@ -121,9 +121,9 @@ class BrandController extends Controller
         if ($status) {
             request()->session()->flash('success', 'Brand has been deleted successfully.');
         } else {
-            request()->session()->flash('error', 'Error occurred while deleting banner');
+            request()->session()->flash('error', 'Error occurred while deleting brand');
         }
-        return redirect()->route('banners.index');
+        return redirect()->route('brands.index');
     }
 
     public function getBrands()
@@ -132,7 +132,7 @@ class BrandController extends Controller
 
         $data = $this->brandService->getAllBrands();
 
-        $banners = collect($data['content']);
+        $brands = collect($data['content']);
 
         $page = $data['page'];
 
@@ -140,7 +140,7 @@ class BrandController extends Controller
             'draw' => request()->get("draw"),
             'recordsTotal' => $page['totalElements'],
             'recordsFiltered' => $page['totalElements'],
-            'data' => $banners
+            'data' => $brands
         ]);
 
         return response()->json(
@@ -148,7 +148,7 @@ class BrandController extends Controller
                 'draw' => request()->get("draw"),
                 'recordsTotal' => $page['totalElements'],
                 'recordsFiltered' => $page['totalElements'],
-                'data' => $banners
+                'data' => $brands
             ]
         );
     }

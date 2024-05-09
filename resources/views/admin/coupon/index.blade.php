@@ -10,92 +10,71 @@
         </div>
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary float-left">Coupon List</h6>
-            <a href="{{ route('coupon.create') }}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip"
+            <a href="{{ route('coupons.create') }}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip"
                 data-placement="bottom" title="Add User"><i class="fas fa-plus"></i> Add Coupon</a>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                @if (count($coupons) > 0)
-                    <table class="table table-bordered table-hover" id="banner-dataTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Coupon Code</th>
-                                <th>Type</th>
-                                <th>Value</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach ($coupons as $coupon)
-                                <tr>
-                                    <td>{{ $coupon->id }}</td>
-                                    <td>{{ $coupon->code }}</td>
-                                    <td>
-                                        @if ($coupon->type == 'fixed')
-                                            <span class="badge badge-primary">{{ $coupon->type }}</span>
-                                        @else
-                                            <span class="badge badge-warning">{{ $coupon->type }}</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($coupon->type == 'fixed')
-                                            ${{ number_format($coupon->value, 2) }}
-                                        @else
-                                            {{ $coupon->value }}%
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($coupon->status == 'active')
-                                            <span class="badge badge-success">{{ $coupon->status }}</span>
-                                        @else
-                                            <span class="badge badge-warning">{{ $coupon->status }}</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('coupon.edit', $coupon->id) }}"
-                                            class="btn btn-primary btn-sm float-left mr-1"
-                                            style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip"
-                                            title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
-                                        <form method="POST" action="{{ route('coupon.destroy', [$coupon->id]) }}">
-                                            @csrf
-                                            @method('delete')
-                                            <button class="btn btn-danger btn-sm dltBtn" data-id={{ $coupon->id }}
-                                                style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip"
-                                                data-placement="bottom" title="Delete"><i
-                                                    class="fas fa-trash-alt"></i></button>
-                                        </form>
-                                    </td>
-                                    {{-- Delete Modal --}}
-                                    {{-- <div class="modal fade" id="delModal{{$user->id}}" tabindex="-1" role="dialog" aria-labelledby="#delModal{{$user->id}}Label" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="#delModal{{$user->id}}Label">Delete user</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                              </button>
-                            </div><!-- Visit 'codeastro' for more projects -->
-                            <div class="modal-body">
-                              <form method="post" action="{{ route('banners.destroy',$user->id) }}">
-                                @csrf 
-                                @method('delete')
-                                <button type="submit" class="btn btn-danger" style="margin:auto; text-align:center">Parmanent delete user</button>
-                              </form>
+            <div class="search">
+                <form action="#" id="search-form">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="couponId">ID</label>
+                                <input type="text" class="form-control" name="couponId" id="couponId" value=""
+                                    placeholder="Enter ID" data-toggle="search-box" data-column="couponId"
+                                    data-operator="equal" data-fieldtype="integer">
                             </div>
-                          </div>
+                            <div class="col-md-3">
+                                <label for="code">Coupon Code</label>
+                                <input type="text" class="form-control" name="code" id="code" value=""
+                                    placeholder="Enter code" data-toggle="search-box" data-column="code"
+                                    data-operator="like" data-fieldtype="integer">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="type">Type</label>
+                                <select name="type" class="form-control" id="type" data-toggle="search-box"
+                                    data-column="type" data-operator="equal" data-fieldtype="string">
+                                    <option value="">all</option>
+                                    <option value="fixed">fixed</option>
+                                    <option value="percent">percent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="value">Value</label>
+                                <input type="text" class="form-control" name="value" id="value" value=""
+                                    placeholder="Enter value" data-toggle="search-box" data-column="value"
+                                    data-operator="equal" data-fieldtype="integer">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="status">Status</label>
+                                <select name="status" class="form-control" id="status" data-toggle="search-box"
+                                    data-column="status" data-operator="equal" data-fieldtype="string">
+                                    <option value="">all</option>
+                                    <option value="active">active</option>
+                                    <option value="inactive">inactive</option>
+                                </select>
+                            </div>
                         </div>
-                    </div> --}}
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <span style="float:right">{{ $coupons->links() }}</span>
-                @else
-                    <h6 class="text-center">No Coupon found!!! Please create coupon</h6>
-                @endif
+                    </div>
+                </form>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Coupon Code</th>
+                            <th>Type</th>
+                            <th>Value</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -105,7 +84,7 @@
     <link href="{{ asset('assets/admin/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
     <style>
-        div.dataTables_wrapper div.dataTables_paginate {
+        .dataTables_filter {
             display: none;
         }
 
@@ -129,46 +108,64 @@
     <!-- Page level custom scripts -->
     <script src="{{ asset('assets/admin/js/demo/datatables-demo.js') }}"></script>
     <script>
-        $('#banner-dataTable').DataTable({
-            "columnDefs": [{
-                "orderable": false,
-                "targets": [4, 5]
-            }]
-        });
-
-        // Sweet alert
-
-        function deleteData(id) {
-
-        }
-    </script>
-    <script>
         $(document).ready(function() {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $('.dltBtn').click(function(e) {
-                var form = $(this).closest('form');
-                var dataID = $(this).data('id');
-                // alert(dataID);
-                e.preventDefault();
-                swal({
-                        title: "Are you sure?",
-                        text: "Once deleted, you will not be able to recover this data!",
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                    })
-                    .then((willDelete) => {
-                        if (willDelete) {
-                            form.submit();
-                        } else {
-                            swal("Your data is safe!");
+            const dataTable = document.getElementById("dataTable");
+            if (!!dataTable) {
+                let table = DATATABLE.init("#dataTable", '/admin/coupons/ajax-get-coupons', {
+                    columnDefs: [{
+                        targets: '_all',
+                        orderable: false,
+                        searchable: false
+                    }, {
+                        targets: [0, 1, 2, 3],
+                        orderable: true,
+                        searchable: true,
+                    }],
+                    columns: [{
+                            name: 'couponId',
+                            target: 0,
+                            data: 'couponId',
+                            orderable: true,
+                            searchable: true
+                        },
+                        {
+                            name: 'code',
+                            target: 1,
+                            data: 'code',
+                            orderable: true,
+                            searchable: true
+                        },
+                        {
+                            name: 'type',
+                            target: 2,
+                            data: 'type',
+                            orderable: true,
+                            searchable: true
+                        },
+                        {
+                            name: 'value',
+                            target: 3,
+                            data: 'value',
+                            orderable: true,
+                            searchable: false
+                        },
+                        {
+                            name: 'status',
+                            target: 4,
+                            data: 'status',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            name: 'action',
+                            target: 5,
+                            data: 'action',
+                            orderable: false,
+                            searchable: false
                         }
-                    });
-            })
+                    ]
+                });
+            }
         })
     </script>
 @endpush

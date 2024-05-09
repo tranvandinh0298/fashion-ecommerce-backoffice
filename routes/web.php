@@ -100,7 +100,17 @@ Route::prefix("admin")->middleware(['auth', 'isAdmin'])->group(function () {
     // Shipping
     Route::resource('/shipping', ShippingController::class);
     // Coupon
-    Route::resource('/coupon', CouponController::class);
+    // Route::resource('/coupon', CouponController::class);
+    Route::prefix("coupons")->group(function () {
+        Route::get("/", [CouponController::class, 'index'])->name("coupons.index");
+        Route::get("/ajax-get-coupons", [CouponController::class, 'getCoupons'])->name("coupons.get");
+        Route::get("/create", [CouponController::class, 'create'])->name("coupons.create");
+        Route::post("/", [CouponController::class, 'store'])->name("coupons.store");
+        Route::get("/{id}", [CouponController::class, 'show'])->name("coupons.show");
+        Route::get("/{id}/edit", [CouponController::class, 'edit'])->name("coupons.edit");
+        Route::patch("/{id}", [CouponController::class, 'update'])->name("coupons.update");
+        Route::delete("/{id}", [CouponController::class, 'destroy'])->name("coupons.destroy");
+    });
     // Settings
     Route::get('settings', [DashboardController::class, 'settings'])->name('settings');
     Route::post('setting/update', [DashboardController::class, 'settingsUpdate'])->name('settings.update');

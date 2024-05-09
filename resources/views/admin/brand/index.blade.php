@@ -72,19 +72,19 @@
     <link href="{{ asset('assets/admin/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
     <style>
-      .dataTables_filter {
-          display: none;
-      }
+        .dataTables_filter {
+            display: none;
+        }
 
-      .zoom {
-          transition: transform .2s;
-          /* Animation */
-      }
+        .zoom {
+            transition: transform .2s;
+            /* Animation */
+        }
 
-      .zoom:hover {
-          transform: scale(3.2);
-      }
-  </style>
+        .zoom:hover {
+            transform: scale(3.2);
+        }
+    </style>
 @endpush
 
 @push('scripts')
@@ -96,57 +96,57 @@
     <!-- Page level custom scripts -->
     <script src="{{ asset('assets/admin/js/demo/datatables-demo.js') }}"></script>
     <script>
-      $(document).ready(function() {
-          const dataTable = document.getElementById("dataTable");
-          if (!!dataTable) {
-              let table = DATATABLE.init("#dataTable", '/admin/brands/ajax-get-brands', {
-                  columnDefs: [{
-                      targets: '_all',
-                      orderable: false,
-                      searchable: false
-                  }, {
-                      targets: [0, 1, 2],
-                      orderable: true,
-                      searchable: true,
-                  }],
-                  columns: [{
-                          name: 'brandId',
-                          target: 0,
-                          data: 'brandId',
-                          orderable: true,
-                          searchable: true
-                      },
-                      {
-                          name: 'title',
-                          target: 1,
-                          data: 'title',
-                          orderable: true,
-                          searchable: true
-                      },
-                      {
-                          name: 'slug',
-                          target: 2,
-                          data: 'slug',
-                          orderable: true,
-                          searchable: true
-                      },
-                      {
-                          name: 'status',
-                          target: 3,
-                          data: 'status',
-                          orderable: false,
-                          searchable: false
-                      },
-                      {
-                          name: 'action',
-                          target: 4,
-                          data: 'action',
-                          orderable: false,
-                          searchable: false
-                      }
-                  ]
-              });
-          }
-      })
-  </script>
+        $(document).ready(function() {
+            const dataTable = document.getElementById("dataTable");
+            if (!!dataTable) {
+                let table = DATATABLE.init("#dataTable", '/admin/brands/ajax-get-brands', {
+                    columnDefs: [{
+                        targets: '_all',
+                        orderable: false,
+                        searchable: false
+                    }, {
+                        targets: [0, 1, 2],
+                        orderable: true,
+                        searchable: true,
+                    }],
+                    columns: [{
+                            name: 'brandId',
+                            target: 0,
+                            data: 'brandId',
+                            orderable: true,
+                            searchable: true
+                        },
+                        {
+                            name: 'title',
+                            target: 1,
+                            data: 'title',
+                            orderable: true,
+                            searchable: true
+                        },
+                        {
+                            name: 'slug',
+                            target: 2,
+                            data: 'slug',
+                            orderable: true,
+                            searchable: true
+                        },
+                        {
+                            name: 'status',
+                            target: 3,
+                            data: 'status',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            name: 'action',
+                            target: 4,
+                            data: 'action',
+                            orderable: false,
+                            searchable: false
+                        }
+                    ]
+                });
+            }
+        })
+    </script>
 @endpush

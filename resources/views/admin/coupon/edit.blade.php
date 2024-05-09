@@ -4,13 +4,13 @@
     <div class="card">
         <h5 class="card-header">Edit Coupon</h5>
         <div class="card-body">
-            <form method="post" action="{{ route('coupon.update', $coupon->id) }}">
+            <form method="post" action="{{ route('coupons.update', $coupon['couponId']) }}">
                 @csrf
                 @method('PATCH')
                 <div class="form-group">
                     <label for="inputTitle" class="col-form-label">Coupon Code <span class="text-danger">*</span></label>
                     <input id="inputTitle" type="text" name="code" placeholder="Enter Coupon Code"
-                        value="{{ $coupon->code }}" class="form-control">
+                        value="{{ $coupon['code'] }}" class="form-control">
                     @error('code')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -19,8 +19,8 @@
                 <div class="form-group"><!-- Visit 'codeastro' for more projects -->
                     <label for="type" class="col-form-label">Type <span class="text-danger">*</span></label>
                     <select name="type" class="form-control">
-                        <option value="fixed" {{ $coupon->type == 'fixed' ? 'selected' : '' }}>Fixed</option>
-                        <option value="percent" {{ $coupon->type == 'percent' ? 'selected' : '' }}>Percent</option>
+                        <option value="fixed" {{ $coupon['type'] == 'fixed' ? 'selected' : '' }}>Fixed</option>
+                        <option value="percent" {{ $coupon['type'] == 'percent' ? 'selected' : '' }}>Percent</option>
                     </select>
                     @error('type')
                         <span class="text-danger">{{ $message }}</span>
@@ -30,7 +30,7 @@
                 <div class="form-group">
                     <label for="inputTitle" class="col-form-label">Value <span class="text-danger">*</span></label>
                     <input id="inputTitle" type="number" name="value" placeholder="Enter Coupon value"
-                        value="{{ $coupon->value }}" class="form-control">
+                        value="{{ $coupon['value'] }}" class="form-control">
                     @error('value')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -39,8 +39,8 @@
                 <div class="form-group"><!-- Visit 'codeastro' for more projects -->
                     <label for="status" class="col-form-label">Status <span class="text-danger">*</span></label>
                     <select name="status" class="form-control">
-                        <option value="active" {{ $coupon->status == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ $coupon->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        <option value="active" {{ $coupon['status'] == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ $coupon['status'] == 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
                     @error('status')
                         <span class="text-danger">{{ $message }}</span>

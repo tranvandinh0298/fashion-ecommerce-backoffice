@@ -144,7 +144,6 @@ class CategoryService
             'parentCategory' => $categoryDTO['parentCategoryDTO'] ?? null,
             'photo' => $categoryDTO['photo'],
             'status' => $categoryDTO['status'],
-            'action' => $categoryDTO['categoryId'],
         ];
     }
 

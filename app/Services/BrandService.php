@@ -43,7 +43,7 @@ class BrandService
         }
 
         $content = $data['content'];
-        $data['content'] = $this->convertListOfBrandDTOs($content);
+        $data['content'] = $this->convertListOfBrandsToHTML($content);
 
         return $data;
     }
@@ -108,8 +108,23 @@ class BrandService
             'brandId' => $brandDTO['brandId'],
             'title' => $brandDTO['title'],
             'slug' => $brandDTO['slug'],
-            'status' => $this->displayStatus($brandDTO['status']),
-            'action' => $this->displayAction($brandDTO['brandId'], 'brands')
+            'status' => $brandDTO['status'],
         ];
+    }
+
+    protected function convertListOfBrandsToHTML($brands) {
+        if (!empty($brands)) {
+            $data = collect($brands)->map(function ($brand) {
+                return $this->convertBrandToHTML($this->convertBrandDTOtoBrand($brand));
+            });
+            return $data;
+        }
+    }
+
+    protected function convertBrandToHTML($brand) {
+        $brand['status'] = $this->displayStatus($brand['status']);
+        $brand['action'] = $this->displayAction($brand['brandId'], 'brands');
+
+        return $brand;
     }
 }

@@ -3,12 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Coupon\StoreCouponRequest;
+use App\Http\Requests\Coupon\UpdateCouponRequest;
 use App\Models\Coupon;
 use Illuminate\Http\Request;
 use App\Models\Cart;
+use App\Services\CouponService;
+use App\Traits\LogTrait;
 
 class CouponController extends Controller
 {
+    use LogTrait;
+    protected $couponService;
+
+    public function __construct()
+    {
+        $this->couponService = new CouponService();
+    }
     /**
      * Display a listing of the resource.
      *
@@ -16,9 +27,9 @@ class CouponController extends Controller
      */
     public function index()
     {
-        $coupon = Coupon::orderBy('id', 'DESC')->paginate('10');
+        // $coupon = Coupon::orderBy('id', 'DESC')->paginate('10');
         return response()->view('admin.coupon.index', [
-            'coupons', $coupon
+            // 'coupons', $coupon
         ]);
     }
 
@@ -38,23 +49,16 @@ class CouponController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreCouponRequest $request)
     {
-        // return $request->all();
-        $this->validate($request, [
-            'code' => 'string|required',
-            'type' => 'required|in:fixed,percent',
-            'value' => 'required|numeric',
-            'status' => 'required|in:active,inactive'
-        ]);
         $data = $request->all();
-        $status = Coupon::create($data);
+        $status = $this->couponService->createCoupon($data);
         if ($status) {
             request()->session()->flash('success', 'Coupon added');
         } else {
             request()->session()->flash('error', 'Please try again!!');
         }
-        return redirect()->route('coupon.index');
+        return redirect()->route('coupons.index');
     }
 
     /**
@@ -75,16 +79,11 @@ class CouponController extends Controller
      */
     public function edit($id)
     {
-        $coupon = Coupon::find($id);
-        if ($coupon) {
-            return response()->view('admin.coupon.edit', [
-                'coupon', $coupon
-            ]);
-        } else {
-            return response()->view('admin.coupon.index', [
-                'error', 'Coupon not found'
-            ]);
-        }
+        $coupon = $this->couponService->getCouponById($id);
+
+        return response()->view('admin.coupon.edit', [
+            'coupon' => $coupon
+        ]);
     }
 
     /**
@@ -94,24 +93,18 @@ class CouponController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCouponRequest $request, $id)
     {
-        $coupon = Coupon::find($id);
-        $this->validate($request, [
-            'code' => 'string|required',
-            'type' => 'required|in:fixed,percent',
-            'value' => 'required|numeric',
-            'status' => 'required|in:active,inactive'
-        ]);
         $data = $request->all();
 
-        $status = $coupon->fill($data)->save();
+        $status = $this->couponService->updateCoupon($id, $data);
+
         if ($status) {
             request()->session()->flash('success', 'Coupon updated');
         } else {
             request()->session()->flash('error', 'Please try again!!');
         }
-        return redirect()->route('coupon.index');
+        return redirect()->route('coupons.index');
     }
 
     /**
@@ -122,19 +115,14 @@ class CouponController extends Controller
      */
     public function destroy($id)
     {
-        $coupon = Coupon::find($id);
-        if ($coupon) {
-            $status = $coupon->delete();
-            if ($status) {
-                request()->session()->flash('success', 'Coupon deleted');
-            } else {
-                request()->session()->flash('error', 'Error, Please try again');
-            }
-            return redirect()->route('coupon.index');
+        $status = $this->couponService->softDeleteCoupon($id);
+
+        if ($status) {
+            request()->session()->flash('success', 'Coupon has been deleted successfully.');
         } else {
-            request()->session()->flash('error', 'Coupon not found');
-            return redirect()->back();
+            request()->session()->flash('error', 'Error occurred while deleting coupon');
         }
+        return redirect()->route('coupons.index');
     }
 
     public function couponStore(Request $request)
@@ -157,5 +145,32 @@ class CouponController extends Controller
             request()->session()->flash('success', 'Coupon successfully applied');
             return redirect()->back();
         }
+    }
+
+    public function getCoupons()
+    {
+        $this->logInfo(request()->all());
+
+        $data = $this->couponService->getAllCoupons();
+
+        $coupons = collect($data['content']);
+
+        $page = $data['page'];
+
+        $this->logInfo([
+            'draw' => request()->get("draw"),
+            'recordsTotal' => $page['totalElements'],
+            'recordsFiltered' => $page['totalElements'],
+            'data' => $coupons
+        ]);
+
+        return response()->json(
+            [
+                'draw' => request()->get("draw"),
+                'recordsTotal' => $page['totalElements'],
+                'recordsFiltered' => $page['totalElements'],
+                'data' => $coupons
+            ]
+        );
     }
 }

@@ -211,7 +211,7 @@
         General Settings
     </div>
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('coupon.index') }}">
+        <a class="nav-link" href="{{ route('coupons.index') }}">
             <i class="fas fa-table"></i>
             <span>Coupon</span></a>
     </li>

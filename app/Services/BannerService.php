@@ -119,7 +119,6 @@ class BannerService
             'slug' => $bannerDTO['slug'],
             'photo' => $bannerDTO['photo'],
             'status' => $bannerDTO['status'],
-            'action' => $bannerDTO['bannerId'],
         ];
     }
 

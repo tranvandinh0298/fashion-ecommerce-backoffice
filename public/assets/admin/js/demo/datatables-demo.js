@@ -37,12 +37,12 @@ const DATATABLE = {
             bSort: true,
             bLengthChange: true,
             initComplete: function (settings, json) {
-                
                 initSearchBox();
-
-                initDeleteBtn();
             },
             order: [[order, 'desc']],
+            drawCallback: function () {
+                initDeleteBtn();
+            }
 
         };
         options_default.language["sInfo"] = "Hiển thị từ _START_ đến _END_ trong tổng số _TOTAL_ dòng";
