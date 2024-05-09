@@ -125,11 +125,7 @@ trait RequestToCoreTrait
         }
 
         // extractData
-        if (empty($jsonToArray['data'])) {
-            throw new RestException("Lỗi không có dữ liệu trả về");
-        } else {
-            $data = $jsonToArray['data'];
-        }
+        $data = $jsonToArray['data'] ?? [];
 
         return $data;
     }

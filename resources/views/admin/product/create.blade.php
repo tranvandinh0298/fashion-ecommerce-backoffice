@@ -38,8 +38,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="cat_id">Category <span class="text-danger">*</span></label>
-                    <select name="cat_id" id="cat_id" class="form-control">
+                    <label for="categoryId">Category <span class="text-danger">*</span></label>
+                    <select name="categoryId" id="categoryId" class="form-control">
                         <option value="">--Select any category--</option>
                         @if (!empty($categories))
                             @foreach ($categories as $category)
@@ -49,9 +49,9 @@
                     </select>
                 </div>
 
-                <div class="form-group d-none" id="child_cat_div">
-                    <label for="child_cat_id">Sub Category</label>
-                    <select name="child_cat_id" id="child_cat_id" class="form-control">
+                <div class="form-group d-none" id="child-category-div">
+                    <label for="childCategoryId">Sub Category</label>
+                    <select name="childCategoryId" id="childCategoryId" class="form-control">
                         <option value="">--Select any category--</option>
                     </select>
                 </div>
@@ -93,8 +93,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="brand_id">Brand</label>
-                    <select name="brand_id" class="form-control">
+                    <label for="brandId">Brand</label>
+                    <select name="brandId" class="form-control">
                         <option value="">--Select Brand--</option>
                         @if (!empty($brands))
                             @foreach ($brands as $brand)
@@ -190,38 +190,31 @@
     </script>
 
     <script>
-        $('#cat_id').change(function() {
-            var cat_id = $(this).val();
-            // alert(cat_id);
-            if (cat_id != null) {
-                // Ajax call
+        $('#categoryId').change(function() {
+            var categoryId = $(this).val();
+            if (categoryId != null) {
                 $.ajax({
-                    url: "/admin/category/" + cat_id + "/child",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        id: cat_id
-                    },
-                    type: "POST",
+                    url: "/admin/categories/" + categoryId + "/child-categories",
+                    data: {},
                     success: function(response) {
+                        console.log(response)
                         if (typeof(response) != 'object') {
                             response = $.parseJSON(response)
                         }
-                        // console.log(response);
                         var html_option = "<option value=''>----Select sub category----</option>"
                         if (response.status) {
                             var data = response.data;
-                            // alert(data);
                             if (response.data) {
-                                $('#child_cat_div').removeClass('d-none');
-                                $.each(data, function(id, title) {
-                                    html_option += "<option value='" + id + "'>" + title +
+                                $('#child-category-div').removeClass('d-none');
+                                data.forEach(item => {
+                                    html_option += "<option value='" + item.categoryId + "'>" + item.title +
                                         "</option>"
                                 });
-                            } else {}
+                            }
                         } else {
-                            $('#child_cat_div').addClass('d-none');
+                            $('#child-category-div').addClass('d-none');
                         }
-                        $('#child_cat_id').html(html_option);
+                        $('#childCategoryId').html(html_option);
                     }
                 });
             } else {}

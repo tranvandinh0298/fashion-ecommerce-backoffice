@@ -46,8 +46,6 @@ class ProductController extends Controller
      */
     public function create()
     {
-        // $brands = $this->brandService->getAllBrandsWithoutPagination(['filters' => []]);
-
         $categories = $this->categoryService->getAllCategoriesWithoutPagination(
             [
                 'filters' => [
@@ -56,6 +54,24 @@ class ProductController extends Controller
                         'operator' => 'EQUAL',
                         'fieldType' => 'INTEGER',
                         'value' => 1
+                    ],
+                    [
+                        'key' => 'status',
+                        'operator' => 'EQUAL',
+                        'fieldType' => 'STRING',
+                        'value' => 'active'
+                    ]
+                ]
+            ]
+        );
+        $brands = $this->brandService->getAllBrandsWithoutPagination(
+            [
+                'filters' => [
+                    [
+                        'key' => 'status',
+                        'operator' => 'EQUAL',
+                        'fieldType' => 'STRING',
+                        'value' => 'active'
                     ]
                 ]
             ]
@@ -63,7 +79,7 @@ class ProductController extends Controller
 
         return response()->view('admin.product.create', [
             'categories' => $categories,
-            // 'brands' => $brands
+            'brands' => $brands
         ]);
     }
 
