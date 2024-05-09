@@ -18,6 +18,10 @@ class BrandRepository implements BrandInterface
     {
         return $this->sendGetRequest($this->url . "/brands", $requestData, __METHOD__);
     }
+    public function getAllBrandsWithoutPagination($requestData)
+    {
+        return $this->sendGetRequest($this->url . "/brands/without-pagination", $requestData, __METHOD__);
+    }
     public function getBrandById($id)
     {
         return $this->sendGetRequest($this->url . "/brands/".$id, [], __METHOD__);

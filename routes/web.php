@@ -76,15 +76,29 @@ Route::prefix("admin")->middleware(['auth', 'isAdmin'])->group(function () {
         Route::get("/ajax-get-categories", [CategoryController::class, 'getCategories'])->name("categories.get");
         Route::get("/create", [CategoryController::class, 'create'])->name("categories.create");
         Route::post("/", [CategoryController::class, 'store'])->name("categories.store");
-        Route::get("/{id}", [CategoryController::class, 'show'])->name("categories.show");
+        Route::prefix("/{id}")->group(function () {
+            Route::get("/", [CategoryController::class, 'show'])->name("categories.show");
+            Route::get("/child-categories", [CategoryController::class, 'getChildParentByParentCategoryId'])->name("categories.childs");
+        });
         Route::get("/{id}/edit", [CategoryController::class, 'edit'])->name("categories.edit");
         Route::patch("/{id}", [CategoryController::class, 'update'])->name("categories.update");
         Route::delete("/{id}", [CategoryController::class, 'destroy'])->name("categories.destroy");
     });
     // Product
-    Route::resource('/product', ProductController::class);
+    // Route::resource('/product', ProductController::class);
+    Route::prefix("products")->group(function () {
+        Route::get("/", [ProductController::class, 'index'])->name("products.index");
+        Route::get("/ajax-get-products", [ProductController::class, 'getProducts'])->name("products.get");
+        Route::get("/create", [ProductController::class, 'create'])->name("products.create");
+        Route::post("/", [ProductController::class, 'store'])->name("products.store");
+        Route::get("/{id}", [ProductController::class, 'show'])->name("products.show");
+        Route::get("/{id}/edit", [ProductController::class, 'edit'])->name("products.edit");
+        Route::patch("/{id}", [ProductController::class, 'update'])->name("products.update");
+        Route::delete("/{id}", [ProductController::class, 'destroy'])->name("products.destroy");
+    });
+
     // Ajax for sub category
-    Route::post('/category/{id}/child', [CategoryController::class, 'getChildByParent']);
+    // Route::post('/category/{id}/child', [CategoryController::class, 'getChildByParent']);
     // POST category
     Route::resource('/post-category', PostCategoryController::class);
     // Post tag

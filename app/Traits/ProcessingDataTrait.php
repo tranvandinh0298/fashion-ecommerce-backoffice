@@ -23,6 +23,9 @@ trait ProcessingDataTrait
             'page' => 0,
             'size' => 10,
         ];
+
+        Log::info('searchData init: '. json_encode($searchData));
+
         $request = request();
 
         $searchData['size'] = $request->query("length", 10);
@@ -40,6 +43,8 @@ trait ProcessingDataTrait
                 'direction' => strtoupper($sort['dir'])
             ];
         }
+
+        Log::info('searchData after: '. json_encode($searchData));
 
         return $searchData;
     }

@@ -48,32 +48,43 @@ class BrandService
         return $data;
     }
 
-    public function getBrandById($brandId)
+    public function getAllBrandsWithoutPagination($requestData)
     {
-        $data = $this->brandRepository->getBrandById($brandId);
+        $data = $this->brandRepository->getAllBrandsWithoutPagination($requestData);
+
+        $data = $this->convertListOfBrandDTOs($data);
 
         return $data;
     }
 
-    public function createBrand(array $data)
+    public function getBrandById($brandId)
     {
-        $insertData = [
-            'title' => $data['title'],
-            'slug' => $data['slug'],
-            'status' => $data['status'],
-        ];
+        $data = $this->brandRepository->getBrandById($brandId);
+
+        $data = $this->convertBrandDTOtoBrand($data);
+
+        return $data;
+    }
+
+    public function createBrand(array $insertData)
+    {
+        // $insertData = [
+        //     'title' => $data['title'],
+        //     'slug' => $data['slug'],
+        //     'status' => $data['status'],
+        // ];
 
         $data = $this->brandRepository->createBrand($insertData);
 
         return $data;
     }
 
-    public function updateBrand(int $brandId, array $data)
+    public function updateBrand(int $brandId, array $updateData)
     {
-        $updateData = [
-            'title' => $data['title'],
-            'status' => $data['status'],
-        ];
+        // $updateData = [
+        //     'title' => $data['title'],
+        //     'status' => $data['status'],
+        // ];
 
         $data = $this->brandRepository->updateBrand($brandId, $updateData);
 

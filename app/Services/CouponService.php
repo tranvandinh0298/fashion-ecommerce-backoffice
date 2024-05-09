@@ -48,6 +48,15 @@ class CouponService
         return $data;
     }
 
+    public function getAllCouponsWithoutPagination($requestData)
+    {
+        $data = $this->couponRepository->getAllCouponsWithoutPagination($requestData);
+
+        $data = $this->convertListOfCouponDTOs($data);
+
+        return $data;
+    }
+
     public function getCouponById($couponId)
     {
         $data = $this->couponRepository->getCouponById($couponId);
@@ -55,28 +64,28 @@ class CouponService
         return $data;
     }
 
-    public function createCoupon(array $data)
+    public function createCoupon(array $insertData)
     {
-        $insertData = [
-            'code' => $data['code'],
-            'type' => $data['type'],
-            'value' => $data['value'],
-            'status' => $data['status'],
-        ];
+        // $insertData = [
+        //     'code' => $data['code'],
+        //     'type' => $data['type'],
+        //     'value' => $data['value'],
+        //     'status' => $data['status'],
+        // ];
 
         $data = $this->couponRepository->createCoupon($insertData);
 
         return $data;
     }
 
-    public function updateCoupon(int $couponId, array $data)
+    public function updateCoupon(int $couponId, array $updateData)
     {
-        $updateData = [
-            'code' => $data['code'],
-            'type' => $data['type'],
-            'value' => $data['value'],
-            'status' => $data['status'],
-        ];
+        // $updateData = [
+        //     'code' => $data['code'],
+        //     'type' => $data['type'],
+        //     'value' => $data['value'],
+        //     'status' => $data['status'],
+        // ];
 
         $data = $this->couponRepository->updateCoupon($couponId, $updateData);
 
@@ -116,7 +125,8 @@ class CouponService
         ];
     }
 
-    protected function convertListOfCouponsToHTML($coupons) {
+    protected function convertListOfCouponsToHTML($coupons)
+    {
         if (!empty($coupons)) {
             $data = collect($coupons)->map(function ($coupon) {
                 return $this->convertCouponToHTML($this->convertCouponDTOtoCoupon($coupon));
@@ -125,7 +135,8 @@ class CouponService
         }
     }
 
-    protected function convertCouponToHTML($coupon) {
+    protected function convertCouponToHTML($coupon)
+    {
         $coupon['status'] = $this->displayStatus($coupon['status']);
         $coupon['action'] = $this->displayAction($coupon['couponId'], 'coupons');
 

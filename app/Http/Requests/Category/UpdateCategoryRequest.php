@@ -44,7 +44,8 @@ class UpdateCategoryRequest extends FormRequest
         $photo = parse_url($this->photo)['path'];
 
         $this->merge([
-            'photo' => $photo
+            'photo' => $photo,
+            'isParent' => !empty($this->isParent) ? $this->isParent : 0
         ]);
     }
 }

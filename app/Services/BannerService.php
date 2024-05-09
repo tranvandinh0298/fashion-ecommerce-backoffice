@@ -48,41 +48,47 @@ class BannerService
         return $data;
     }
 
-    public function getBannerById($bannerId)
+    public function getAllBannersWithoutPagination($requestData)
     {
-        $data = $this->bannerRepository->getBannerById($bannerId);
+        $data = $this->bannerRepository->getAllBannersWithoutPagination($requestData);
 
-        if (!empty($data)) {
-            $data['photo'] = url($data['photo']);
-        }
+        $data = $this->convertListOfBannerDTOs($data);
 
         return $data;
     }
 
-    public function createBanner(array $data)
+    public function getBannerById($bannerId)
     {
-        $insertData = [
-            'title' => $data['title'],
-            'slug' => $data['slug'],
-            'description' => $data['description'],
-            'photo' => $data['photo'],
-            'status' => $data['status'],
-        ];
+        $data = $this->bannerRepository->getBannerById($bannerId);
+
+        $data = $this->convertListOfBannerDTOs($data);
+
+        return $data;
+    }
+
+    public function createBanner(array $insertData)
+    {
+        // $insertData = [
+        //     'title' => $data['title'],
+        //     'slug' => $data['slug'],
+        //     'description' => $data['description'],
+        //     'photo' => $data['photo'],
+        //     'status' => $data['status'],
+        // ];
 
         $data = $this->bannerRepository->createBanner($insertData);
 
         return $data;
     }
 
-    public function updateBanner(int $bannerId, array $data)
+    public function updateBanner(int $bannerId, array $updateData)
     {
-        $updateData = [
-            'categoryId' => $bannerId,
-            'title' => $data['title'],
-            'description' => $data['description'],
-            'photo' => $data['photo'],
-            'status' => $data['status'],
-        ];
+        // $updateData = [
+        //     'title' => $data['title'],
+        //     'description' => $data['description'],
+        //     'photo' => $data['photo'],
+        //     'status' => $data['status'],
+        // ];
 
         $data = $this->bannerRepository->updateBanner($bannerId, $updateData);
 
@@ -117,7 +123,7 @@ class BannerService
             'bannerId' => $bannerDTO['bannerId'],
             'title' => $bannerDTO['title'],
             'slug' => $bannerDTO['slug'],
-            'photo' => $bannerDTO['photo'],
+            'photo' => url($bannerDTO['photo']),
             'status' => $bannerDTO['status'],
         ];
     }

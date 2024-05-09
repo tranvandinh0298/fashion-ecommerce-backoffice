@@ -18,6 +18,10 @@ class CouponRepository implements CouponInterface
     {
         return $this->sendGetRequest($this->url . "/coupons", $requestData, __METHOD__);
     }
+    public function getAllCouponsWithoutPagination($requestData)
+    {
+        return $this->sendGetRequest($this->url . "/coupons/without-pagination", $requestData, __METHOD__);
+    }
     public function getCouponById($id)
     {
         return $this->sendGetRequest($this->url . "/coupons/".$id, [], __METHOD__);

@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Category;
+namespace App\Http\Requests\Product;
 
+use App\Rules\ExistedBrand;
 use App\Rules\ExistedParentCategory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
-class StoreCategoryRequest extends FormRequest
+class StoreProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,12 +28,19 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'title' => 'string|required',
-            'slug' => 'string|required',
-            'summary' => 'string|nullable',
-            'photo' => 'string|nullable',
+            'summary' => 'string|required',
+            'description' => 'string|nullable',
+            'photo' => 'string|required',
+            'size' => 'nullable',
+            'stock' => "required|numeric",
+            'categoryId' => ['required', new ExistedParentCategory],
+            'brandId' => ['nullable', new ExistedBrand],
+            'childCategoryId' => ['nullable', new ExistedParentCategory],
+            'isFeatured' => 'sometimes|in:1',
             'status' => 'required|in:active,inactive',
-            'isParent' => 'sometimes|in:1',
-            'parentCategoryId' => ['nullable', new ExistedParentCategory],
+            'condition' => 'required|in:default,new,hot',
+            'price' => 'required|numeric',
+            'discount' => 'nullable|numeric'
         ];
     }
 
@@ -50,7 +58,8 @@ class StoreCategoryRequest extends FormRequest
         $this->merge([
             'slug' => $slug,
             'photo' => $photo,
-            'isParent' => !empty($this->isParent) ? $this->isParent : 0
+            'isFeatured' => !empty($this->isFeatured) ? $this->isFeatured : 0,
+            'size' => !empty($this->size) ? implode(',', $this->size) : '',
         ]);
     }
 }

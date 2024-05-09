@@ -31,7 +31,7 @@ trait DisplayHtmlTrait
 
     public function displayPhoto($photo = "assets/admin/img/thumbnail-default.jpg")
     {
-        return '<img src="' . url($photo) . '" class="img-fluid zoom" style="max-width:80px"
+        return '<img src="' . $photo . '" class="img-fluid zoom" style="max-width:80px"
                                                 alt="' . $photo . '">';
     }
 

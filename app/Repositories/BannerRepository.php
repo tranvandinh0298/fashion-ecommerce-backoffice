@@ -18,6 +18,10 @@ class BannerRepository implements BannerInterface
     {
         return $this->sendGetRequest($this->url . "/banners", $requestData, __METHOD__);
     }
+    public function getAllBannersWithoutPagination($requestData)
+    {
+        return $this->sendGetRequest($this->url . "/banners/without-pagination", $requestData, __METHOD__);
+    }
     public function getBannerById($id)
     {
         return $this->sendGetRequest($this->url . "/banners/".$id, [], __METHOD__);

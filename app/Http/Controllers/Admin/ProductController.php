@@ -3,15 +3,32 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
-
+use App\Services\BrandService;
+use App\Services\CategoryService;
+use App\Services\ProductService;
+use App\Traits\LogTrait;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+    use LogTrait;
+    protected $productService;
+    protected $categoryService;
+    protected $brandService;
+
+    public function __construct()
+    {
+        $this->productService = new ProductService();
+        $this->categoryService = new CategoryService();
+        $this->brandService = new BrandService();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -19,14 +36,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::getAllProduct();
-        // return $products;
-        return response()->view(
-            'admin.product.index',
-            [
-                'products' => $products
-            ]
-        );
+        return response()->view('admin.product.index', []);
     }
 
     /**
@@ -36,11 +46,24 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $brand = Brand::get();
-        $category = Category::where('is_parent', 1)->get();
+        // $brands = $this->brandService->getAllBrandsWithoutPagination(['filters' => []]);
+
+        $categories = $this->categoryService->getAllCategoriesWithoutPagination(
+            [
+                'filters' => [
+                    [
+                        'key' => 'isParent',
+                        'operator' => 'EQUAL',
+                        'fieldType' => 'INTEGER',
+                        'value' => 1
+                    ]
+                ]
+            ]
+        );
+
         return response()->view('admin.product.create', [
-            'categories' => $category,
-            'brands' => $brand
+            'categories' => $categories,
+            // 'brands' => $brands
         ]);
     }
 
@@ -50,49 +73,17 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        // return $request->all();
-        $this->validate($request, [
-            'title' => 'string|required',
-            'summary' => 'string|required',
-            'description' => 'string|nullable',
-            'photo' => 'string|required',
-            'size' => 'nullable',
-            'stock' => "required|numeric",
-            'cat_id' => 'required|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
-            'child_cat_id' => 'nullable|exists:categories,id',
-            'is_featured' => 'sometimes|in:1',
-            'status' => 'required|in:active,inactive',
-            'condition' => 'required|in:default,new,hot',
-            'price' => 'required|numeric',
-            'discount' => 'nullable|numeric'
-        ]);
-
         $data = $request->all();
-        $slug = Str::slug($request->title);
-        $count = Product::where('slug', $slug)->count();
-        if ($count > 0) {
-            $slug = $slug . '-' . date('ymdis') . '-' . rand(0, 999);
-        }
-        $data['slug'] = $slug;
-        $data['is_featured'] = $request->input('is_featured', 0);
-        $size = $request->input('size');
-        if ($size) {
-            $data['size'] = implode(',', $size);
-        } else {
-            $data['size'] = '';
-        }
-        // return $size;
-        // return $data;
-        $status = Product::create($data);
+
+        $status = $this->productService->createProduct($data);
         if ($status) {
             request()->session()->flash('success', 'Product added');
         } else {
             request()->session()->flash('error', 'Please try again!!');
         }
-        return redirect()->route('product.index');
+        return redirect()->route('products.index');
     }
 
     /**
@@ -114,18 +105,30 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $brand = Brand::get();
-        $product = Product::findOrFail($id);
-        $category = Category::where('is_parent', 1)->get();
-        $items = Product::where('id', $id)->get();
+        $brands = $this->brandService->getAllBrandsWithoutPagination(['filters' => []]);
+
+        $product = $this->productService->getProductById($id);
+
+        $categories = $this->brandService->getAllBrandsWithoutPagination([
+            'filters' => [
+                [
+                    'key' => 'isParent',
+                    'operator' => 'EQUAL',
+                    'fieldType' => 'INTEGER',
+                    'value' => 1
+                ]
+            ]
+        ]);
+
+        // $items = Product::where('id', $id)->get();
         // return $items;
         return response()->view(
             'admin.product.edit',
             [
                 'product' => $product,
-                'brands' => $brand,
-                'categories' => $category,
-                'items' => $items
+                'brands' => $brands,
+                'categories' => $categories,
+                // 'items' => $items
             ]
         );
     }
@@ -137,42 +140,18 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateProductRequest $request, $id)
     {
-        $product = Product::findOrFail($id);
-        $this->validate($request, [
-            'title' => 'string|required',
-            'summary' => 'string|required',
-            'description' => 'string|nullable',
-            'photo' => 'string|required',
-            'size' => 'nullable',
-            'stock' => "required|numeric",
-            'cat_id' => 'required|exists:categories,id',
-            'child_cat_id' => 'nullable|exists:categories,id',
-            'is_featured' => 'sometimes|in:1',
-            'brand_id' => 'nullable|exists:brands,id',
-            'status' => 'required|in:active,inactive',
-            'condition' => 'required|in:default,new,hot',
-            'price' => 'required|numeric',
-            'discount' => 'nullable|numeric'
-        ]);
-
         $data = $request->all();
-        $data['is_featured'] = $request->input('is_featured', 0);
-        $size = $request->input('size');
-        if ($size) {
-            $data['size'] = implode(',', $size);
-        } else {
-            $data['size'] = '';
-        }
-        // return $data;
-        $status = $product->fill($data)->save();
+
+        $status = $this->productService->updateProduct($id, $data);
+
         if ($status) {
             request()->session()->flash('success', 'Product updated');
         } else {
             request()->session()->flash('error', 'Please try again!!');
         }
-        return redirect()->route('product.index');
+        return redirect()->route('products.index');
     }
 
     /**
@@ -183,14 +162,40 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
-        $status = $product->delete();
+        $status = $this->productService->softDeleteProduct($id);
 
         if ($status) {
-            request()->session()->flash('success', 'Product deleted');
+            request()->session()->flash('success', 'Product has been deleted successfully.');
         } else {
-            request()->session()->flash('error', 'Error while deleting product');
+            request()->session()->flash('error', 'Error occurred while deleting product');
         }
-        return redirect()->route('product.index');
+        return redirect()->route('products.index');
+    }
+
+    public function getProducts()
+    {
+        $this->logInfo(request()->all());
+
+        $data = $this->productService->getAllProducts();
+
+        $banners = collect($data['content']);
+
+        $page = $data['page'];
+
+        $this->logInfo([
+            'draw' => request()->get("draw"),
+            'recordsTotal' => $page['totalElements'],
+            'recordsFiltered' => $page['totalElements'],
+            'data' => $banners
+        ]);
+
+        return response()->json(
+            [
+                'draw' => request()->get("draw"),
+                'recordsTotal' => $page['totalElements'],
+                'recordsFiltered' => $page['totalElements'],
+                'data' => $banners
+            ]
+        );
     }
 }

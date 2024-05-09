@@ -53,16 +53,9 @@ class CategoryService
     {
         $data = $this->categoryRepository->getAllCategoriesWithoutPagination($requestData);
 
-        if (empty($data)) {
-            $data = [
-                "content" => [],
-            ];
-        }
+        $data = $this->convertListOfCategoryDTOs($data);
 
-        $content = $data['content'];
-        $data['content'] = $this->convertListOfCategoryDTOs($content);
-
-        return $data['content'];
+        return $data;
     }
 
     public function getCategoryById($categoryId)
@@ -71,40 +64,36 @@ class CategoryService
 
         $data = $this->convertCategoryDTOtoCategory($data);
 
-        if (!empty($data)) {
-            $data['photo'] = url($data['photo']);
-        }
-
         return $data;
     }
 
-    public function createCategory(array $data)
+    public function createCategory(array $insertData)
     {
-        $insertData = [
-            'title' => $data['title'],
-            'slug' => $data['slug'],
-            'summary' => $data['summary'],
-            'photo' => $data['photo'],
-            'status' => $data['status'],
-            'isParent' => $data['isParent'] ?? 0,
-            'parentCategoryId' => $data['parentCategoryId'] ?? null,
-        ];
+        // $insertData = [
+        //     'title' => $data['title'],
+        //     'slug' => $data['slug'],
+        //     'summary' => $data['summary'],
+        //     'photo' => $data['photo'],
+        //     'status' => $data['status'],
+        //     'isParent' => $data['isParent'] ?? 0,
+        //     'parentCategoryId' => $data['parentCategoryId'] ?? null,
+        // ];
 
         $data = $this->categoryRepository->createCategory($insertData);
 
         return $data;
     }
 
-    public function updateCategory(int $categoryId, array $data)
+    public function updateCategory(int $categoryId, array $updateData)
     {
-        $updateData = [
-            'title' => $data['title'],
-            'summary' => $data['summary'],
-            'photo' => $data['photo'],
-            'status' => $data['status'],
-            'isParent' => $data['isParent'] ?? 0,
-            'parentCategoryId' => $data['parentCategoryId'] ?? null,
-        ];
+        // $updateData = [
+        //     'title' => $data['title'],
+        //     'summary' => $data['summary'],
+        //     'photo' => $data['photo'],
+        //     'status' => $data['status'],
+        //     'isParent' => $data['isParent'] ?? 0,
+        //     'parentCategoryId' => $data['parentCategoryId'] ?? null,
+        // ];
 
         $data = $this->categoryRepository->updateCategory($categoryId, $updateData);
 
@@ -142,7 +131,7 @@ class CategoryService
             'summary' => $categoryDTO['summary'],
             'isParent' => $categoryDTO['isParent'],
             'parentCategory' => $categoryDTO['parentCategoryDTO'] ?? null,
-            'photo' => $categoryDTO['photo'],
+            'photo' => url($categoryDTO['photo']),
             'status' => $categoryDTO['status'],
         ];
     }
