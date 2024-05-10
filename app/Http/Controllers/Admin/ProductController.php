@@ -36,7 +36,41 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return response()->view('admin.product.index', []);
+        $categories = $this->categoryService->getAllCategoriesWithoutPagination(
+            [
+                'filters' => [
+                    [
+                        'key' => 'isParent',
+                        'operator' => 'EQUAL',
+                        'fieldType' => 'INTEGER',
+                        'value' => 1
+                    ]
+                ]
+            ]
+        );
+        $childCategories = $this->categoryService->getAllCategoriesWithoutPagination(
+            [
+                'filters' => [
+                    [
+                        'key' => 'isParent',
+                        'operator' => 'EQUAL',
+                        'fieldType' => 'INTEGER',
+                        'value' => 0
+                    ]
+                ]
+            ]
+        );
+        $brands = $this->brandService->getAllBrandsWithoutPagination(
+            [
+                'filters' => []
+            ]
+        );
+
+        return response()->view('admin.product.index', [
+            'categories' => $categories,
+            'childCategories' => $childCategories,
+            'brands' => $brands
+        ]);
     }
 
     /**
@@ -125,7 +159,7 @@ class ProductController extends Controller
 
         $product = $this->productService->getProductById($id);
 
-        $categories = $this->brandService->getAllBrandsWithoutPagination([
+        $categories = $this->categoryService->getAllCategoriesWithoutPagination([
             'filters' => [
                 [
                     'key' => 'isParent',
@@ -136,6 +170,25 @@ class ProductController extends Controller
             ]
         ]);
 
+        $childCategories = $this->categoryService->getAllCategoriesWithoutPagination(
+            [
+                'filters' => [
+                    [
+                        'key' => 'isParent',
+                        'operator' => 'EQUAL',
+                        'fieldType' => 'INTEGER',
+                        'value' => 0
+                    ],
+                    [
+                        'key' => 'parentCategoryId',
+                        'operator' => 'EQUAL',
+                        'fieldType' => 'INTEGER',
+                        'value' => $product['category']['categoryId']
+                    ]
+                ]
+            ]
+        );
+
         // $items = Product::where('id', $id)->get();
         // return $items;
         return response()->view(
@@ -144,6 +197,7 @@ class ProductController extends Controller
                 'product' => $product,
                 'brands' => $brands,
                 'categories' => $categories,
+                'childCategories' => $childCategories
                 // 'items' => $items
             ]
         );

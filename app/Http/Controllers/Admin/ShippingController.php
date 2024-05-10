@@ -3,12 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Shipping\StoreShippingRequest;
 use Illuminate\Http\Request;
 use App\Models\Shipping;
 use App\Models\Coupon;
+use App\Services\ShippingService;
+use App\Traits\LogTrait;
 
 class ShippingController extends Controller
 {
+    use LogTrait;
+    protected $shippingService;
+
+    public function __construct()
+    {
+        $this->shippingService = new ShippingService();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,9 +27,11 @@ class ShippingController extends Controller
      */
     public function index()
     {
-        $shipping = Shipping::orderBy('id', 'DESC')->paginate(10);
+        // $shipping = Shipping::orderBy('id', 'DESC')->paginate(10);
+
+
         return response()->view('admin.shipping.index', [
-            'shippings' => $shipping
+            // 'shippings' => $shipping
         ]);
     }
 
@@ -38,22 +51,16 @@ class ShippingController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreShippingRequest $request)
     {
-        $this->validate($request, [
-            'type' => 'string|required',
-            'price' => 'nullable|numeric',
-            'status' => 'required|in:active,inactive'
-        ]);
         $data = $request->all();
-        // return $data;
-        $status = Shipping::create($data);
+        $status = $this->shippingService->createShipping($data);
         if ($status) {
             request()->session()->flash('success', 'Shipping created successfully');
         } else {
             request()->session()->flash('error', 'Error, Please try again');
         }
-        return redirect()->route('shipping.index');
+        return redirect()->route('shippings.index');
     }
 
     /**
@@ -75,10 +82,7 @@ class ShippingController extends Controller
      */
     public function edit($id)
     {
-        $shipping = Shipping::find($id);
-        if (!$shipping) {
-            request()->session()->flash('error', 'Shipping not found');
-        }
+        $shipping = $this->shippingService->getShippingById($id);
         return response()->view('admin.shipping.edit', [
             'shipping' => $shipping
         ]);
@@ -93,21 +97,14 @@ class ShippingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $shipping = Shipping::find($id);
-        $this->validate($request, [
-            'type' => 'string|required',
-            'price' => 'nullable|numeric',
-            'status' => 'required|in:active,inactive'
-        ]);
         $data = $request->all();
-        // return $data;
-        $status = $shipping->fill($data)->save();
+        $status = $this->shippingService->updateShipping($id, $data);
         if ($status) {
             request()->session()->flash('success', 'Shipping updated');
         } else {
             request()->session()->flash('error', 'Error, Please try again');
         }
-        return redirect()->route('shipping.index');
+        return redirect()->route('shippings.index');
     }
 
     /**
@@ -118,18 +115,39 @@ class ShippingController extends Controller
      */
     public function destroy($id)
     {
-        $shipping = Shipping::find($id);
-        if ($shipping) {
-            $status = $shipping->delete();
-            if ($status) {
-                request()->session()->flash('success', 'Shipping deleted');
-            } else {
-                request()->session()->flash('error', 'Error, Please try again');
-            }
-            return redirect()->route('shipping.index');
+        $status = $this->shippingService->softDeleteShipping($id);
+        if ($status) {
+            request()->session()->flash('success', 'Shnipping has been deleted successfully.');
         } else {
-            request()->session()->flash('error', 'Shipping not found');
-            return redirect()->back();
+            request()->session()->flash('error', 'Error occurred while deleting shipping');
         }
+        return redirect()->route('shippings.index');
+    }
+
+    public function getShippings()
+    {
+        $this->logInfo(request()->all());
+
+        $data = $this->shippingService->getAllShippings();
+
+        $brands = collect($data['content']);
+
+        $page = $data['page'];
+
+        $this->logInfo([
+            'draw' => request()->get("draw"),
+            'recordsTotal' => $page['totalElements'],
+            'recordsFiltered' => $page['totalElements'],
+            'data' => $brands
+        ]);
+
+        return response()->json(
+            [
+                'draw' => request()->get("draw"),
+                'recordsTotal' => $page['totalElements'],
+                'recordsFiltered' => $page['totalElements'],
+                'data' => $brands
+            ]
+        );
     }
 }

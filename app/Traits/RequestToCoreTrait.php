@@ -82,35 +82,6 @@ trait RequestToCoreTrait
         $this->logInfo($method . ' - RESPONSE: ' . json_encode($response->json(), 256));
     }
 
-    protected function getFilterData()
-    {
-        $searchData = [
-            'filters' => [],
-            'sorts' => [],
-            'page' => 0,
-            'size' => 10,
-        ];
-        $request = request();
-
-        $searchData['size'] = $request->query("length", 10);
-
-        $searchData['page'] = $request->query("start", 0) / $searchData['size'];
-
-        $filters = $request->query("search", []);
-        $searchData['filters'] = json_decode($filters['value']);
-
-        $sorts = $request->query("order");
-        $columns = $request->query("columns");
-        foreach ($sorts as $sort) {
-            $searchData['sorts'][] = [
-                'key' => $columns[$sort['column']]['name'],
-                'direction' => strtoupper($sort['dir'])
-            ];
-        }
-
-        return $searchData;
-    }
-
     protected function extractData(Response $response): array
     {
         $jsonToArray = $response->json();

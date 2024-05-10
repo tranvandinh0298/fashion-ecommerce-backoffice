@@ -112,7 +112,17 @@ Route::prefix("admin")->middleware(['auth', 'isAdmin'])->group(function () {
     // Order
     Route::resource('/order', OrderController::class);
     // Shipping
-    Route::resource('/shipping', ShippingController::class);
+    // Route::resource('/shipping', ShippingController::class);
+    Route::prefix("shippings")->group(function () {
+        Route::get("/", [ShippingController::class, 'index'])->name("shippings.index");
+        Route::get("/ajax-get-shippings", [ShippingController::class, 'getShippings'])->name("shippings.get");
+        Route::get("/create", [ShippingController::class, 'create'])->name("shippings.create");
+        Route::post("/", [ShippingController::class, 'store'])->name("shippings.store");
+        Route::get("/{id}", [ShippingController::class, 'show'])->name("shippings.show");
+        Route::get("/{id}/edit", [ShippingController::class, 'edit'])->name("shippings.edit");
+        Route::patch("/{id}", [ShippingController::class, 'update'])->name("shippings.update");
+        Route::delete("/{id}", [ShippingController::class, 'destroy'])->name("shippings.destroy");
+    });
     // Coupon
     // Route::resource('/coupon', CouponController::class);
     Route::prefix("coupons")->group(function () {

@@ -31,10 +31,60 @@
                                     data-operator="like" data-fieldtype="integer">
                             </div>
                             <div class="col-md-3">
-                                <label for="slug">Slug</label>
-                                <input type="text" class="form-control" name="slug" id="slug" value=""
-                                    placeholder="Enter slug" data-toggle="search-box" data-column="slug"
-                                    data-operator="like" data-fieldtype="integer">
+                                <label for="categoryId">Category</label>
+                                <select name="categoryId" class="form-control" id="categoryId" data-toggle="search-box"
+                                    data-column="categoryId" data-operator="equal" data-fieldtype="string">
+                                    <option value="">all</option>
+                                    @if (!empty($categories))
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category['categoryId'] }}">{{ $category['title'] }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="childCategoryId">Child category</label>
+                                <select name="childCategoryId" class="form-control" id="childCategoryId"
+                                    data-toggle="search-box" data-column="childCategoryId" data-operator="equal"
+                                    data-fieldtype="string">
+                                    <option value="">all</option>
+                                    @if (!empty($childCategories))
+                                        @foreach ($childCategories as $category)
+                                            <option value="{{ $category['categoryId'] }}">{{ $category['title'] }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="brandId">Brand</label>
+                                <select name="brandId" class="form-control" id="brandId" data-toggle="search-box"
+                                    data-column="brandId" data-operator="equal" data-fieldtype="string">
+                                    <option value="">all</option>
+                                    @if (!empty($brands))
+                                        @foreach ($brands as $brand)
+                                            <option value="{{ $brand['brandId'] }}">{{ $brand['title'] }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="isFeatured">isFeatured</label>
+                                <select name="isFeatured" class="form-control" id="isFeatured" data-toggle="search-box"
+                                    data-column="isFeatured" data-operator="equal" data-fieldtype="integer">
+                                    <option value="">all</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="condition">Condition</label>
+                                <select name="condition" class="form-control" id="condition" data-toggle="search-box"
+                                    data-column="condition" data-operator="equal" data-fieldtype="string">
+                                    <option value="">all</option>
+                                    <option value="default">Default</option>
+                                    <option value="new">New</option>
+                                    <option value="hot">Hot</option>
+                                </select>
                             </div>
                             <div class="col-md-3">
                                 <label for="status">Status</label>
