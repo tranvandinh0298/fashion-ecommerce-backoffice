@@ -22,6 +22,18 @@ trait DisplayHtmlTrait
             : '<span class="badge badge-warning">' . $status . '</span>';
     }
 
+    public function displayOrderStatus($status)
+    {
+        if ($status == 'new')
+            return '<span class="badge badge-primary">NEW</span>';
+        elseif ($status == 'process')
+            return '<span class="badge badge-warning">Processing</span>';
+        elseif ($status == 'delivered')
+            return '<span class="badge badge-success">Delivered</span>';
+        else
+            return '<span class="badge badge-danger">' . $status . '</span>';
+    }
+
     public function displayYesNo($status)
     {
         return ($status == 1)
@@ -57,12 +69,34 @@ trait DisplayHtmlTrait
         </form>';
     }
 
+    public function displayShowButton($id, $route)
+    {
+        return '<a href="' . route($route . '.show', $id) . '"
+        class="btn btn-warning btn-sm float-left mr-1"
+        style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip"
+        title="view" data-placement="bottom"><i class="fas fa-eye"></i></a>';
+    }
+
     public function displayAction($id, $route)
     {
         $html = '';
         $html .= $this->displayEditButton($id, $route);
         $html .= $this->displayDeleteButton($id, $route);
 
+        return $html;
+    }
+
+    public function displayRating($rating)
+    {
+        $html = '<ul style="list-style:none">';
+        for ($i = 1; $i <= 5; $i++) {
+            if ($rating >= $i) {
+                $html .= '<li style="float:left;color:#F7941D;"><i class="fa fa-star"></i></li>';
+            } else {
+                $html .= '<li style="float:left;color:#F7941D;"><i class="far fa-star"></i></li>';
+            }
+        }
+        $html .= '</ul>';
         return $html;
     }
 }

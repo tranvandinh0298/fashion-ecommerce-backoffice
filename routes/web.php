@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\PostCategoryController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostTagController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\ShippingController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -100,17 +101,59 @@ Route::prefix("admin")->middleware(['auth', 'isAdmin'])->group(function () {
     // Ajax for sub category
     // Route::post('/category/{id}/child', [CategoryController::class, 'getChildByParent']);
     // POST category
-    Route::resource('/post-category', PostCategoryController::class);
+    // Route::resource('/post-category', PostCategoryController::class);
+    Route::prefix("post-categories")->group(function () {
+        Route::get("/", [PostCategoryController::class, 'index'])->name("postCategories.index");
+        Route::get("/ajax-get-post-categories", [PostCategoryController::class, 'getPostCategories'])->name("postCategories.get");
+        Route::get("/create", [PostCategoryController::class, 'create'])->name("postCategories.create");
+        Route::post("/", [PostCategoryController::class, 'store'])->name("postCategories.store");
+        Route::get("/{id}", [PostCategoryController::class, 'show'])->name("postCategories.show");
+        Route::get("/{id}/edit", [PostCategoryController::class, 'edit'])->name("postCategories.edit");
+        Route::patch("/{id}", [PostCategoryController::class, 'update'])->name("postCategories.update");
+        Route::delete("/{id}", [PostCategoryController::class, 'destroy'])->name("postCategories.destroy");
+    });
     // Post tag
-    Route::resource('/post-tag', PostTagController::class);
+    // Route::resource('/post-tag', PostTagController::class);
+    Route::prefix("post-tags")->group(function () {
+        Route::get("/", [PostTagController::class, 'index'])->name("postTags.index");
+        Route::get("/ajax-get-post-tags", [PostTagController::class, 'getPostTags'])->name("postTags.get");
+        Route::get("/create", [PostTagController::class, 'create'])->name("postTags.create");
+        Route::post("/", [PostTagController::class, 'store'])->name("postTags.store");
+        Route::get("/{id}", [PostTagController::class, 'show'])->name("postTags.show");
+        Route::get("/{id}/edit", [PostTagController::class, 'edit'])->name("postTags.edit");
+        Route::patch("/{id}", [PostTagController::class, 'update'])->name("postTags.update");
+        Route::delete("/{id}", [PostTagController::class, 'destroy'])->name("postTags.destroy");
+    });
     // Post
-    Route::resource('/post', PostController::class);
+    // Route::resource('/post', PostController::class);
+    Route::prefix("posts")->group(function () {
+        Route::get("/", [PostController::class, 'index'])->name("posts.index");
+        Route::get("/ajax-get-posts", [PostController::class, 'getPosts'])->name("posts.get");
+        Route::get("/create", [PostController::class, 'create'])->name("posts.create");
+        Route::post("/", [PostController::class, 'store'])->name("posts.store");
+        Route::get("/{id}", [PostController::class, 'show'])->name("posts.show");
+        Route::get("/{id}/edit", [PostController::class, 'edit'])->name("posts.edit");
+        Route::patch("/{id}", [PostController::class, 'update'])->name("posts.update");
+        Route::delete("/{id}", [PostController::class, 'destroy'])->name("posts.destroy");
+    });
+
     // Message
     Route::resource('/message', MessageController::class);
     Route::get('/message/five', [MessageController::class, 'messageFive'])->name('messages.five');
 
     // Order
-    Route::resource('/order', OrderController::class);
+    // Route::resource('/order', OrderController::class);
+    Route::prefix("orders")->group(function () {
+        Route::get("/", [OrderController::class, 'index'])->name("orders.index");
+        Route::get("/ajax-get-orders", [OrderController::class, 'getOrders'])->name("orders.get");
+        Route::get("/create", [OrderController::class, 'create'])->name("orders.create");
+        Route::post("/", [OrderController::class, 'store'])->name("orders.store");
+        Route::get("/{id}", [OrderController::class, 'show'])->name("orders.show");
+        Route::get("/{id}/edit", [OrderController::class, 'edit'])->name("orders.edit");
+        Route::patch("/{id}", [OrderController::class, 'update'])->name("orders.update");
+        Route::delete("/{id}", [OrderController::class, 'destroy'])->name("orders.destroy");
+    });
+
     // Shipping
     // Route::resource('/shipping', ShippingController::class);
     Route::prefix("shippings")->group(function () {
@@ -146,6 +189,15 @@ Route::prefix("admin")->middleware(['auth', 'isAdmin'])->group(function () {
     // Password Change
     Route::get('change-password', [DashboardController::class, 'changePassword'])->name('change.password.form');
     Route::post('change-password', [DashboardController::class, 'changPasswordStore'])->name('change.password');
+
+    // Route::get('/reviews',[ReviewController::class, 'index'])->name("reviews.index");
+    Route::prefix("reviews")->group(function () {
+        Route::get("/", [ReviewController::class, 'index'])->name("reviews.index");
+        Route::get("/ajax-get-reviews", [ReviewController::class, 'getReviews'])->name("reviews.get");
+        Route::get("/{id}/edit", [ReviewController::class, 'edit'])->name("reviews.edit");
+        Route::patch("/{id}", [ReviewController::class, 'update'])->name("reviews.update");
+        Route::delete("/{id}", [ReviewController::class, 'destroy'])->name("reviews.destroy");
+    });
 });
 
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {

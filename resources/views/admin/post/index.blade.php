@@ -9,7 +9,9 @@
             </div>
         </div>
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary float-left">Order Lists</h6>
+            <h6 class="m-0 font-weight-bold text-primary float-left">Post Lists</h6>
+            <a href="{{ route('posts.create') }}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip"
+                data-placement="bottom" title="Add User"><i class="fas fa-plus"></i> Add Post</a>
         </div>
         <div class="card-body">
             <div class="search">
@@ -17,9 +19,9 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-3">
-                                <label for="categoryId">ID</label>
-                                <input type="text" class="form-control" name="categoryId" id="categoryId" value=""
-                                    placeholder="Enter ID" data-toggle="search-box" data-column="categoryId"
+                                <label for="postId">ID</label>
+                                <input type="text" class="form-control" name="postId" id="postId" value=""
+                                    placeholder="Enter ID" data-toggle="search-box" data-column="postId"
                                     data-operator="equal" data-fieldtype="integer">
                             </div>
                             <div class="col-md-3">
@@ -52,69 +54,21 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Order No.</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Qty.</th>
-                            <th>Charge</th>
-                            <th>Total</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Tag</th>
+                            <th>Author</th>
+                            <th>Photo</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- @foreach ($orders as $order)
-                            @php
-                                $shipping_charge = DB::table('shippings')
-                                    ->where('id', $order->shipping_id)
-                                    ->pluck('price');
-                            @endphp
-                            <tr>
-                                <td>{{ $order->id }}</td>
-                                <td>{{ $order->order_number }}</td>
-                                <td>{{ $order->first_name }} {{ $order->last_name }}</td>
-                                <td>{{ $order->email }}</td>
-                                <td>{{ $order->quantity }}</td>
-                                <td>
-                                    @foreach ($shipping_charge as $data)
-                                        $ {{ number_format($data, 2) }}
-                                    @endforeach
-                                </td>
-                                <td>${{ number_format($order->total_amount, 2) }}</td>
-                                <td>
-                                    @if ($order->status == 'new')
-                                        <span class="badge badge-primary">NEW</span>
-                                    @elseif($order->status == 'process')
-                                        <span class="badge badge-warning">Processing</span>
-                                    @elseif($order->status == 'delivered')
-                                        <span class="badge badge-success">Delivered</span>
-                                    @else
-                                        <span class="badge badge-danger">{{ $order->status }}</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <a href="{{ route('order.show', $order->id) }}"
-                                        class="btn btn-warning btn-sm float-left mr-1"
-                                        style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip"
-                                        title="view" data-placement="bottom"><i class="fas fa-eye"></i></a>
-                                    <a href="{{ route('order.edit', $order->id) }}"
-                                        class="btn btn-primary btn-sm float-left mr-1"
-                                        style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip"
-                                        title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
-                                    <form method="POST" action="{{ route('order.destroy', [$order->id]) }}">
-                                        @csrf
-                                        @method('delete')
-                                        <button class="btn btn-danger btn-sm dltBtn" data-id={{ $order->id }}
-                                            style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip"
-                                            data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach --}}
                     </tbody>
                 </table>
             </div>
         </div>
+        <!-- Visit 'codeastro' for more projects -->
     </div>
 @endsection
 
@@ -124,15 +78,6 @@
     <style>
         .dataTables_filter {
             display: none;
-        }
-
-        .zoom {
-            transition: transform .2s;
-            /* Animation */
-        }
-
-        .zoom:hover {
-            transform: scale(3.2);
         }
     </style>
 @endpush
@@ -149,63 +94,77 @@
         $(document).ready(function() {
             const dataTable = document.getElementById("dataTable");
             if (!!dataTable) {
-                let table = DATATABLE.init("#dataTable", '/admin/orders/ajax-get-orders', {
+                let table = DATATABLE.init("#dataTable", '/admin/posts/ajax-get-posts', {
                     columnDefs: [{
                         targets: '_all',
                         orderable: false,
                         searchable: false
+                    }, {
+                        targets: [0, 1, 2],
+                        orderable: true,
+                        searchable: true,
                     }],
                     columns: [{
-                            name: 'orderId',
+                            name: 'postId',
                             target: 0,
-                            data: 'orderId',
+                            data: 'postId',
                             orderable: true,
+                            searchable: true
                         },
                         {
-                            name: 'orderNo',
+                            name: 'title',
                             target: 1,
-                            data: 'orderNo',
+                            data: 'title',
                             orderable: true,
+                            searchable: true
                         },
                         {
-                            name: 'name',
+                            name: 'postCategory',
                             target: 2,
-                            data: 'name',
+                            data: 'postCategory.title',
+                            defautContent: "",
                             orderable: true,
+                            searchable: true
                         },
                         {
-                            name: 'email',
+                            name: 'tags',
                             target: 3,
-                            data: 'email',
+                            data: 'tags',
+                            orderable: true,
+                            searchable: true
                         },
                         {
-                            name: 'quantity',
+                            name: 'user',
                             target: 4,
-                            data: 'quantity',
+                            data: 'user.name',
+                            defautContent: "",
+                            orderable: true,
+                            searchable: true
                         },
                         {
-                            name: 'charge',
+                            name: 'photo',
                             target: 5,
-                            data: 'shipping.price',
-                        },
-                        {
-                            name: 'total',
-                            target: 6,
-                            data: 'total',
+                            data: 'photo',
+                            orderable: true,
+                            searchable: true
                         },
                         {
                             name: 'status',
-                            target: 7,
+                            target: 6,
                             data: 'status',
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             name: 'action',
-                            target: 8,
+                            target: 7,
                             data: 'action',
+                            orderable: false,
+                            searchable: false
                         }
                     ]
                 });
             }
-        });
+        })
     </script>
 @endpush

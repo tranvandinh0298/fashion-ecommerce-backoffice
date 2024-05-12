@@ -3,15 +3,32 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Post\UpdatePostRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\PostTag;
 use App\Models\User;
+use App\Services\PostCategoryService;
+use App\Services\PostService;
+use App\Services\PostTagService;
+use App\Traits\LogTrait;
 
 class PostController extends Controller
 {
+    use LogTrait;
+    protected $postService;
+    protected $postTagService;
+    protected $postCategoryService;
+
+    public function __construct()
+    {
+        $this->postService = new PostService();
+        $this->postTagService = new PostTagService();
+        $this->postCategoryService = new PostCategoryService();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -19,11 +36,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::getAllPost();
-        // return $posts;
-        return response()->view('admin.post.index', [
-            'posts' => $posts
-        ]);
+        return response()->view('admin.post.index', []);
     }
 
     /**
@@ -33,11 +46,15 @@ class PostController extends Controller
      */
     public function create()
     {
-        $categories = PostCategory::get();
-        $tags = PostTag::get();
-        $users = User::get();
-        return response()->view('backend.post.create', [
-            'users' => $users, 'categories' => $categories, 'tags' => $tags
+        $postCategories = $this->postCategoryService->getAllPostCategoriesWithoutPagination([
+            'filters' => []
+        ]);
+        $postTags = $this->postTagService->getAllPostTagsWithoutPagination([
+            'filters' => []
+        ]);
+        return response()->view('admin.post.create', [
+            'postCategories' => $postCategories, 
+            'postTags' => $postTags
         ]);
     }
 
@@ -49,43 +66,15 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        // return $request->all();
-        $this->validate($request, [
-            'title' => 'string|required',
-            'quote' => 'string|nullable',
-            'summary' => 'string|required',
-            'description' => 'string|nullable',
-            'photo' => 'string|nullable',
-            'tags' => 'nullable',
-            'added_by' => 'nullable',
-            'post_cat_id' => 'required',
-            'status' => 'required|in:active,inactive'
-        ]);
-
         $data = $request->all();
 
-        $slug = Str::slug($request->title);
-        $count = Post::where('slug', $slug)->count();
-        if ($count > 0) {
-            $slug = $slug . '-' . date('ymdis') . '-' . rand(0, 999);
-        }
-        $data['slug'] = $slug;
-
-        $tags = $request->input('tags');
-        if ($tags) {
-            $data['tags'] = implode(',', $tags);
-        } else {
-            $data['tags'] = '';
-        }
-        // return $data;
-
-        $status = Post::create($data);
+        $status = $this->postService->createPost($data);
         if ($status) {
             request()->session()->flash('success', 'Post added');
         } else {
             request()->session()->flash('error', 'Please try again!!');
         }
-        return redirect()->route('post.index');
+        return redirect()->route('posts.index');
     }
 
     /**
@@ -107,14 +96,16 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        $post = Post::findOrFail($id);
-        $categories = PostCategory::get();
-        $tags = PostTag::get();
-        $users = User::get();
+        $post = $this->postService->getPostById($id);
+        $postCategories = $this->postCategoryService->getAllPostCategoriesWithoutPagination([
+            'filters' => []
+        ]);
+        $postTags = $this->postTagService->getAllPostTagsWithoutPagination([
+            'filters' => []
+        ]);
         return response()->view('admin.post.edit', [
-            'categories' => $categories,
-            'users' => $users,
-            'tags' => $tags,
+            'postCategories' => $postCategories,
+            'postTags' => $postTags,
             'post' => $post
         ]);
     }
@@ -126,39 +117,16 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePostRequest $request, $id)
     {
-        $post = Post::findOrFail($id);
-        // return $request->all();
-        $this->validate($request, [
-            'title' => 'string|required',
-            'quote' => 'string|nullable',
-            'summary' => 'string|required',
-            'description' => 'string|nullable',
-            'photo' => 'string|nullable',
-            'tags' => 'nullable',
-            'added_by' => 'nullable',
-            'post_cat_id' => 'required',
-            'status' => 'required|in:active,inactive'
-        ]);
-
         $data = $request->all();
-        $tags = $request->input('tags');
-        // return $tags;
-        if ($tags) {
-            $data['tags'] = implode(',', $tags);
-        } else {
-            $data['tags'] = '';
-        }
-        // return $data;
-
-        $status = $post->fill($data)->save();
+        $status = $this->postService->updatePost($id, $data);
         if ($status) {
             request()->session()->flash('success', 'Post updated');
         } else {
             request()->session()->flash('error', 'Please try again!!');
         }
-        return redirect()->route('post.index');
+        return redirect()->route('posts.index');
     }
 
     /**
@@ -169,15 +137,40 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        $post = Post::findOrFail($id);
-
-        $status = $post->delete();
+        $status = $this->postService->softDeletePost($id);
 
         if ($status) {
-            request()->session()->flash('success', 'Post deleted');
+            request()->session()->flash('success', 'Post has been deleted successfully.');
         } else {
-            request()->session()->flash('error', 'Error while deleting post ');
+            request()->session()->flash('error', 'Error occurred while deleting Post');
         }
-        return redirect()->route('post.index');
+        return redirect()->route('posts.index');
+    }
+
+    public function getPosts()
+    {
+        $this->logInfo(request()->all());
+
+        $data = $this->postService->getAllPosts();
+
+        $posts = collect($data['content']);
+
+        $page = $data['page'];
+
+        $this->logInfo([
+            'draw' => request()->get("draw"),
+            'recordsTotal' => $page['totalElements'],
+            'recordsFiltered' => $page['totalElements'],
+            'data' => $posts
+        ]);
+
+        return response()->json(
+            [
+                'draw' => request()->get("draw"),
+                'recordsTotal' => $page['totalElements'],
+                'recordsFiltered' => $page['totalElements'],
+                'data' => $posts
+            ]
+        );
     }
 }

@@ -3,12 +3,24 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Post\Tag\StorePostTagRequest;
+use App\Http\Requests\Post\Tag\UpdatePostTagRequest;
 use Illuminate\Http\Request;
 use App\Models\PostTag;
+use App\Services\PostTagService;
+use App\Traits\LogTrait;
 use Illuminate\Support\Str;
 
 class PostTagController extends Controller
 {
+    use LogTrait;
+    protected $postTagService;
+
+    public function __construct()
+    {
+        $this->postTagService = new PostTagService();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,9 +28,9 @@ class PostTagController extends Controller
      */
     public function index()
     {
-        $postTag = PostTag::orderBy('id', 'DESC')->paginate(10);
+        // $postTag = PostTag::orderBy('id', 'DESC')->paginate(10);
         return response()->view('admin.posttag.index', [
-            'postTags' => $postTag
+            // 'postTags' => $postTag
         ]);
     }
 
@@ -38,26 +50,16 @@ class PostTagController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePostTagRequest $request)
     {
-        $this->validate($request, [
-            'title' => 'string|required',
-            'status' => 'required|in:active,inactive'
-        ]);
         $data = $request->all();
-        $slug = Str::slug($request->title);
-        $count = PostTag::where('slug', $slug)->count();
-        if ($count > 0) {
-            $slug = $slug . '-' . date('ymdis') . '-' . rand(0, 999);
-        }
-        $data['slug'] = $slug;
-        $status = PostTag::create($data);
+        $status = $this->postTagService->createPostTag($data);
         if ($status) {
             request()->session()->flash('success', 'Post Tag added');
         } else {
             request()->session()->flash('error', 'Please try again!!');
         }
-        return redirect()->route('post-tag.index');
+        return redirect()->route('postTags.index');
     }
 
     /**
@@ -79,7 +81,7 @@ class PostTagController extends Controller
      */
     public function edit($id)
     {
-        $postTag = PostTag::findOrFail($id);
+        $postTag = $this->postTagService->getPostTagById($id);
         return response()->view('admin.posttag.edit', [
             'postTag' => $postTag
         ]);
@@ -92,22 +94,16 @@ class PostTagController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePostTagRequest $request, $id)
     {
-        $postTag = PostTag::findOrFail($id);
-        // return $request->all();
-        $this->validate($request, [
-            'title' => 'string|required',
-            'status' => 'required|in:active,inactive'
-        ]);
         $data = $request->all();
-        $status = $postTag->fill($data)->save();
+        $status = $this->postTagService->updatePostTag($id, $data);
         if ($status) {
             request()->session()->flash('success', 'Post Tag updated');
         } else {
             request()->session()->flash('error', 'Please try again!!');
         }
-        return redirect()->route('post-tag.index');
+        return redirect()->route('postTags.index');
     }
 
     /**
@@ -118,15 +114,40 @@ class PostTagController extends Controller
      */
     public function destroy($id)
     {
-        $postTag = PostTag::findOrFail($id);
-
-        $status = $postTag->delete();
+        $status = $this->postTagService->softDeletePostTag($id);
 
         if ($status) {
-            request()->session()->flash('success', 'Post Tag deleted');
+            request()->session()->flash('success', 'Post Tag has been deleted successfully.');
         } else {
-            request()->session()->flash('error', 'Error while deleting post tag');
+            request()->session()->flash('error', 'Error occurred while deleting Post Tag');
         }
-        return redirect()->route('post-tag.index');
+        return redirect()->route('postTags.index');
+    }
+
+    public function getPostTags()
+    {
+        $this->logInfo(request()->all());
+
+        $data = $this->postTagService->getAllPostTags();
+
+        $postTags = collect($data['content']);
+
+        $page = $data['page'];
+
+        $this->logInfo([
+            'draw' => request()->get("draw"),
+            'recordsTotal' => $page['totalElements'],
+            'recordsFiltered' => $page['totalElements'],
+            'data' => $postTags
+        ]);
+
+        return response()->json(
+            [
+                'draw' => request()->get("draw"),
+                'recordsTotal' => $page['totalElements'],
+                'recordsFiltered' => $page['totalElements'],
+                'data' => $postTags
+            ]
+        );
     }
 }

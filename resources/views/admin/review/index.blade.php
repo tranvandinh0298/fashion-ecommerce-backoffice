@@ -9,9 +9,7 @@
             </div>
         </div>
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary float-left">Post Category Lists</h6>
-            <a href="{{ route('postCategories.create') }}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip"
-                data-placement="bottom" title="Add User"><i class="fas fa-plus"></i> Add Post Category</a>
+            <h6 class="m-0 font-weight-bold text-primary float-left">Review Lists</h6>
         </div>
         <div class="card-body">
             <div class="search">
@@ -19,21 +17,15 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-3">
-                                <label for="postTagId">ID</label>
-                                <input type="text" class="form-control" name="postTagId" id="postTagId" value=""
-                                    placeholder="Enter ID" data-toggle="search-box" data-column="postTagId"
+                                <label for="reviewId">ID</label>
+                                <input type="text" class="form-control" name="reviewId" id="reviewId" value=""
+                                    placeholder="Enter ID" data-toggle="search-box" data-column="reviewId"
                                     data-operator="equal" data-fieldtype="integer">
                             </div>
                             <div class="col-md-3">
                                 <label for="title">Title</label>
                                 <input type="text" class="form-control" name="title" id="title" value=""
                                     placeholder="Enter title" data-toggle="search-box" data-column="title"
-                                    data-operator="like" data-fieldtype="integer">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="slug">Slug</label>
-                                <input type="text" class="form-control" name="slug" id="slug" value=""
-                                    placeholder="Enter slug" data-toggle="search-box" data-column="slug"
                                     data-operator="like" data-fieldtype="integer">
                             </div>
                             <div class="col-md-3">
@@ -54,15 +46,16 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Title</th>
-                            <th>Slug</th>
+                            <th>Review By</th>
+                            <th>Product</th>
+                            <th>Review</th>
+                            <th>Rate</th>
+                            <th>Date</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-
                     <tbody>
-
                     </tbody>
                 </table>
             </div>
@@ -92,47 +85,70 @@
         $(document).ready(function() {
             const dataTable = document.getElementById("dataTable");
             if (!!dataTable) {
-                let table = DATATABLE.init("#dataTable", '/admin/post-categories/ajax-get-post-categories', {
+                let table = DATATABLE.init("#dataTable", '/admin/reviews/ajax-get-reviews', {
                     columnDefs: [{
                         targets: '_all',
                         orderable: false,
                         searchable: false
                     }, {
-                        targets: [0, 1, 2],
+                        targets: [0, 1, 2, 3],
                         orderable: true,
                         searchable: true,
                     }],
                     columns: [{
-                            name: 'postCategoryId',
+                            name: 'reviewId',
                             target: 0,
-                            data: 'postCategoryId',
+                            data: 'reviewId',
                             orderable: true,
                             searchable: true
                         },
                         {
-                            name: 'title',
+                            name: 'user',
                             target: 1,
-                            data: 'title',
+                            data: 'user.name',
+                            defaultContent: '',
                             orderable: true,
                             searchable: true
                         },
                         {
-                            name: 'slug',
+                            name: 'product',
                             target: 2,
-                            data: 'slug',
+                            data: 'product.title',
+                            defaultContent: '',
                             orderable: true,
                             searchable: true
+                        },
+                        {
+                            name: 'review',
+                            target: 3,
+                            data: 'review',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            name: 'rate',
+                            target: 4,
+                            data: 'rate',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            name: 'createdAt',
+                            target: 5,
+                            data: 'createdAt',
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             name: 'status',
-                            target: 3,
+                            target: 6,
                             data: 'status',
                             orderable: false,
                             searchable: false
                         },
                         {
                             name: 'action',
-                            target: 4,
+                            target: 7,
                             data: 'action',
                             orderable: false,
                             searchable: false

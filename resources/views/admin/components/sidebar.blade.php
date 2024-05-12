@@ -121,7 +121,7 @@
 
     <!--Orders -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('order.index') }}">
+        <a class="nav-link" href="{{ route('orders.index') }}">
             <i class="fas fa-cart-plus"></i>
             <span>Orders</span>
         </a>
@@ -129,8 +129,7 @@
 
     <!-- Reviews -->
     <li class="nav-item">
-        {{-- <a class="nav-link" href="{{ route('review.index') }}"> --}}
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{ route('reviews.index') }}">
             <i class="fas fa-comments"></i>
             <span>Reviews</span></a>
     </li>
@@ -155,8 +154,8 @@
         <div id="postCollapse" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Post Options:</h6>
-                <a class="collapse-item" href="{{ route('post.index') }}">Posts</a>
-                <a class="collapse-item" href="{{ route('post.create') }}">Add Post</a>
+                <a class="collapse-item" href="{{ route('posts.index') }}">Posts</a>
+                <a class="collapse-item" href="{{ route('posts.create') }}">Add Post</a>
             </div>
         </div>
     </li>
@@ -172,8 +171,8 @@
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Category Options:</h6>
-                <a class="collapse-item" href="{{ route('post-category.index') }}">Category</a>
-                <a class="collapse-item" href="{{ route('post-category.create') }}">Add Category</a>
+                <a class="collapse-item" href="{{ route('postCategories.index') }}">Category</a>
+                <a class="collapse-item" href="{{ route('postCategories.create') }}">Add Category</a>
             </div>
         </div>
     </li>
@@ -188,8 +187,8 @@
         <div id="tagCollapse" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Tag Options:</h6>
-                <a class="collapse-item" href="{{ route('post-tag.index') }}">Tag</a>
-                <a class="collapse-item" href="{{ route('post-tag.create') }}">Add Tag</a>
+                <a class="collapse-item" href="{{ route('postTags.index') }}">Tag</a>
+                <a class="collapse-item" href="{{ route('postTags.create') }}">Add Tag</a>
             </div>
         </div>
     </li>

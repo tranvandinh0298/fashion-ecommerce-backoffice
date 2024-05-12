@@ -3,12 +3,24 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Post\Category\StorePostCategoryRequest;
+use App\Http\Requests\Post\Category\UpdatePostCategoryRequest;
 use Illuminate\Http\Request;
 use App\Models\PostCategory;
+use App\Services\PostCategoryService;
+use App\Traits\LogTrait;
 use Illuminate\Support\Str;
 
 class PostCategoryController extends Controller
 {
+    use LogTrait;
+    protected $postCategoryService;
+
+    public function __construct()
+    {
+        $this->postCategoryService = new PostCategoryService();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,9 +28,7 @@ class PostCategoryController extends Controller
      */
     public function index()
     {
-        $postCategory = PostCategory::orderBy('id', 'DESC')->paginate(10);
         return response()->view('admin.postcategory.index', [
-            'postCategories' => $postCategory
         ]);
     }
 
@@ -38,27 +48,16 @@ class PostCategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePostCategoryRequest $request)
     {
-        // return $request->all();
-        $this->validate($request, [
-            'title' => 'string|required',
-            'status' => 'required|in:active,inactive'
-        ]);
         $data = $request->all();
-        $slug = Str::slug($request->title);
-        $count = PostCategory::where('slug', $slug)->count();
-        if ($count > 0) {
-            $slug = $slug . '-' . date('ymdis') . '-' . rand(0, 999);
-        }
-        $data['slug'] = $slug;
-        $status = PostCategory::create($data);
+        $status = $this->postCategoryService->createPostCategory($data);
         if ($status) {
             request()->session()->flash('success', 'Post Category added');
         } else {
             request()->session()->flash('error', 'Please try again!!');
         }
-        return redirect()->route('post-category.index');
+        return redirect()->route('postCategories.index');
     }
 
     /**
@@ -80,7 +79,7 @@ class PostCategoryController extends Controller
      */
     public function edit($id)
     {
-        $postCategory = PostCategory::findOrFail($id);
+        $postCategory = $this->postCategoryService->getPostCategoryById($id);
         return response()->view('admin.postcategory.edit', [
             'postCategory' => $postCategory
         ]);
@@ -93,22 +92,16 @@ class PostCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePostCategoryRequest $request, $id)
     {
-        $postCategory = PostCategory::findOrFail($id);
-        // return $request->all();
-        $this->validate($request, [
-            'title' => 'string|required',
-            'status' => 'required|in:active,inactive'
-        ]);
         $data = $request->all();
-        $status = $postCategory->fill($data)->save();
+        $status = $this->postCategoryService->updatePostCategory($id, $data);
         if ($status) {
             request()->session()->flash('success', 'Post Category updated');
         } else {
             request()->session()->flash('error', 'Please try again!!');
         }
-        return redirect()->route('post-category.index');
+        return redirect()->route('postCategories.index');
     }
 
     /**
@@ -119,15 +112,40 @@ class PostCategoryController extends Controller
      */
     public function destroy($id)
     {
-        $postCategory = PostCategory::findOrFail($id);
-
-        $status = $postCategory->delete();
+        $status = $this->postCategoryService->softDeletePostCategory($id);
 
         if ($status) {
-            request()->session()->flash('success', 'Post Category deleted');
+            request()->session()->flash('success', 'Post Category has been deleted successfully.');
         } else {
-            request()->session()->flash('error', 'Error while deleting post category');
+            request()->session()->flash('error', 'Error occurred while deleting Post Category');
         }
-        return redirect()->route('post-category.index');
+        return redirect()->route('postCategories.index');
+    }
+
+    public function getPostCategories()
+    {
+        $this->logInfo(request()->all());
+
+        $data = $this->postCategoryService->getAllPostCategories();
+
+        $postCategories = collect($data['content']);
+
+        $page = $data['page'];
+
+        $this->logInfo([
+            'draw' => request()->get("draw"),
+            'recordsTotal' => $page['totalElements'],
+            'recordsFiltered' => $page['totalElements'],
+            'data' => $postCategories
+        ]);
+
+        return response()->json(
+            [
+                'draw' => request()->get("draw"),
+                'recordsTotal' => $page['totalElements'],
+                'recordsFiltered' => $page['totalElements'],
+                'data' => $postCategories
+            ]
+        );
     }
 }
